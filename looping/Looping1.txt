@@ -1,0 +1,134 @@
+CREATE TABLE Fournisseur(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE unite(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE maladie(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE tresorerie(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   depot NUMERIC(15,2)  ,
+   retrait NUMERIC(15,2)  ,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE client(
+   id SERIAL,
+   nom VARCHAR(50) ,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE matiere_premiere(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   id_1 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES unite(id)
+);
+
+CREATE TABLE produit(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   denorm_prix_vente NUMERIC(15,2)   NOT NULL,
+   id_1 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES unite(id)
+);
+
+CREATE TABLE fabrication(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   qt_produit NUMERIC(15,2)   NOT NULL,
+   id_1 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES produit(id)
+);
+
+CREATE TABLE achat_mp(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   qt_mp NUMERIC(15,2)   NOT NULL,
+   denorm_prix_achat NUMERIC(15,2)   NOT NULL,
+   id_1 INTEGER NOT NULL,
+   id_2 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES Fournisseur(id),
+   FOREIGN KEY(id_2) REFERENCES matiere_premiere(id)
+);
+
+CREATE TABLE facture(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   total NUMERIC(15,2)   NOT NULL,
+   total_paye NUMERIC(15,2)   NOT NULL,
+   id_1 INTEGER,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES client(id)
+);
+
+CREATE TABLE histo_prix_produit(
+   id SERIAL,
+   date_ DATE NOT NULL,
+   prix_vente_produit NUMERIC(15,2)   NOT NULL,
+   id_1 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES produit(id)
+);
+
+CREATE TABLE fournisseur_mp(
+   id INTEGER,
+   id_1 INTEGER,
+   prix NUMERIC(15,2)   NOT NULL,
+   date_ DATE NOT NULL,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES matiere_premiere(id),
+   FOREIGN KEY(id_1) REFERENCES Fournisseur(id)
+);
+
+CREATE TABLE produit_fournisseur(
+   id INTEGER,
+   id_1 INTEGER,
+   date_ DATE NOT NULL,
+   prix NUMERIC(15,2)   NOT NULL,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES Fournisseur(id),
+   FOREIGN KEY(id_1) REFERENCES produit(id)
+);
+
+CREATE TABLE Formule(
+   id INTEGER,
+   id_1 INTEGER,
+   qt_mp NUMERIC(15,2)   NOT NULL,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES matiere_premiere(id),
+   FOREIGN KEY(id_1) REFERENCES produit(id)
+);
+
+CREATE TABLE maladie_produit(
+   id INTEGER,
+   id_1 INTEGER,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES produit(id),
+   FOREIGN KEY(id_1) REFERENCES maladie(id)
+);
+
+CREATE TABLE detail_facture(
+   id INTEGER,
+   id_1 INTEGER,
+   denorm_prix_vente NUMERIC(15,2)   NOT NULL,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES produit(id),
+   FOREIGN KEY(id_1) REFERENCES facture(id)
+);
