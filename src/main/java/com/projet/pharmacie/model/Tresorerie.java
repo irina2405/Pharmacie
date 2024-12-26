@@ -199,6 +199,33 @@ public class Tresorerie {
            if (con != null) con.close(); 
         }
     }
+
+    public static double getSolde (Timestamp d) throws Exception{
+        double rep = 0.0;
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            String query = "select COALESCE(sum(depot) - sum(retrait),0) as solde from tresorerie  ";
+            if (d != null) {
+                query += "where date_ <= ?";
+            }
+            PreparedStatement st = con.prepareStatement(query);
+            if (d!=null) {
+                st.setTimestamp(1, d);
+            }
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                rep = rs.getDouble(1);
+            }
+            if (st!=null) st.close();
+            if (rs!=null) rs.close();
+        } catch (Exception e) {
+            throw e;
+        }finally{
+            if (con !=null) con.close(); 
+        }
+        return rep;
+    }
 }
 
 // Commun'IT app
