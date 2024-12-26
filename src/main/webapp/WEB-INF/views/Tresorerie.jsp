@@ -21,8 +21,8 @@
                 <tr>
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getDate_() %></td>
-                    <td><%= all[i].getDepot() %></td>
-                    <td><%= all[i].getRetrait() %></td>
+                    <td><%= Util.formatNumber(all[i].getDepot()) %></td>
+                    <td><%= Util.formatNumber(all[i].getRetrait()) %></td>
                     <td>
                         <a href="/TraitTresorerie/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitTresorerie/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
@@ -32,6 +32,7 @@
             </table>
             <center><nav><ul class="pagination pagination-lg"></ul></nav></center>
             <script src="/assets/myjs/pagination.js"></script>
+            <h3> Solde : <%= Util.formatNumber((Double) request.getAttribute("solde")) %> Ar </h3>
         </div>
         <div class="col-md-1">
         </div>

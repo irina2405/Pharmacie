@@ -20,6 +20,7 @@ public class TresorerieController {
         try {
             con = MyConnect.getConnection();
             model.addAttribute("all", Tresorerie.getAll());
+            model.addAttribute("solde", Tresorerie.getSolde(null));
             return "Tresorerie";
         } catch (Exception e) {
             e.printStackTrace();

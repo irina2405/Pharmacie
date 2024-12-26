@@ -1,8 +1,8 @@
 <%@page import="com.projet.pharmacie.util.*"%>
 <%@page import="com.projet.pharmacie.model.*"%>
 <%@page import="java.util.*"%>
-<%@page import="java.time.LocalTime"%>
-<%@page import="java.time.format.DateTimeFormatter"%>
+<%@page import="java.time.*"%>
+<%@page import="java.time.format.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="fr">
