@@ -18,6 +18,7 @@ public class FactureController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Facture.getAll());
             Client[] allClient = Client.getAll();
             model.addAttribute("allClient", allClient);
@@ -83,7 +84,8 @@ public class FactureController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Facture currentFacture = Facture.getById(id);
+            con = MyConnect.getConnection();
+            Facture currentFacture = Facture.getById(id ,con);
             model.addAttribute("currentFacture", currentFacture);
             model.addAttribute("all", Facture.getAll());
             Client[] allClient = Client.getAll();

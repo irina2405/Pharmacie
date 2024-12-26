@@ -46,17 +46,16 @@ public class Matiere_premiere {
 
     public void setUnite(String unite) throws Exception {
          //define how this type should be conterted from String ... type : Unite
-        Unite toSet = Unite.getById(Integer.parseInt(unite));
-
+       Connection con = MyConnect.getConnection();        Unite toSet = Unite.getById(Integer.parseInt(unite),con );
+         con.close();
         setUnite(toSet) ;
     }
 
-    public static Matiere_premiere getById(int id) throws Exception {
+    public static Matiere_premiere getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Matiere_premiere instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM matiere_premiere WHERE id = ?";
             st = con.prepareStatement(query);
@@ -67,14 +66,14 @@ public class Matiere_premiere {
                 instance = new Matiere_premiere();
                 instance.setId(rs.getInt("id"));
                 instance.setNom(rs.getString("nom"));
-                instance.setUnite(Unite.getById(rs.getInt("id_unite")));
+                instance.setUnite(Unite.getById(rs.getInt("id_unite") ,con ));
             }
         } catch (Exception e) {
             throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -94,7 +93,7 @@ public class Matiere_premiere {
                 Matiere_premiere item = new Matiere_premiere();
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
-                item.setUnite(Unite.getById(rs.getInt("id_unite")));
+                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {

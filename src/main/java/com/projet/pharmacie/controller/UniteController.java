@@ -18,6 +18,7 @@ public class UniteController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Unite.getAll());
             return "Unite";
         } catch (Exception e) {
@@ -78,7 +79,8 @@ public class UniteController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Unite currentUnite = Unite.getById(id);
+            con = MyConnect.getConnection();
+            Unite currentUnite = Unite.getById(id ,con);
             model.addAttribute("currentUnite", currentUnite);
             model.addAttribute("all", Unite.getAll());
             return "Unite";

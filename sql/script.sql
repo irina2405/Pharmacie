@@ -89,6 +89,18 @@ CREATE TABLE histo_prix_produit(
    FOREIGN KEY(id_produit) REFERENCES produit(id)
 );
 
+CREATE TABLE achat_produit(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   qt_produit NUMERIC(15,2)   NOT NULL CHECK (qt_produit >= 0),
+   denorm_prix_achat NUMERIC(15,2)   NOT NULL CHECK (denorm_prix_achat >=0),
+   id_fournisseur INTEGER NOT NULL,
+   id_produit INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id),
+   FOREIGN KEY(id_produit) REFERENCES produit(id)
+);
+
 CREATE TABLE fournisseur_mp(
    id SERIAL PRIMARY KEY,
    id_mp INTEGER NOT NULL ,
@@ -130,7 +142,8 @@ CREATE TABLE detail_facture(
    id SERIAL PRIMARY KEY,
    id_produit INTEGER NOT NULL ,
    id_facture INTEGER NOT NULL ,
-   denorm_prix_vente NUMERIC(15,2)   NOT NULL DEFAULT 0.00,
+   denorm_prix_vente NUMERIC(15,2)   NOT NULL CHECK (denorm_prix_vente >=0),
+   qt_produit NUMERIC(15,2)   NOT NULL CHECK (qt_produit >= 0),
    FOREIGN KEY(id_produit) REFERENCES produit(id),
    FOREIGN KEY(id_facture) REFERENCES facture(id)
 );

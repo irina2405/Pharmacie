@@ -18,6 +18,7 @@ public class Detail_factureController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Detail_facture.getAll());
             Produit[] allProduit = Produit.getAll();
             model.addAttribute("allProduit", allProduit);
@@ -84,7 +85,8 @@ public class Detail_factureController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Detail_facture currentDetail_facture = Detail_facture.getById(id);
+            con = MyConnect.getConnection();
+            Detail_facture currentDetail_facture = Detail_facture.getById(id ,con);
             model.addAttribute("currentDetail_facture", currentDetail_facture);
             model.addAttribute("all", Detail_facture.getAll());
             Produit[] allProduit = Produit.getAll();

@@ -39,8 +39,8 @@ public class Formule {
 
     public void setMp(String mp) throws Exception {
          //define how this type should be conterted from String ... type : Matiere_premiere
-        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp));
-
+       Connection con = MyConnect.getConnection();        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
+         con.close();
         setMp(toSet) ;
     }
 
@@ -54,8 +54,8 @@ public class Formule {
 
     public void setProduit(String produit) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-        Produit toSet = Produit.getById(Integer.parseInt(produit));
-
+       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
+         con.close();
         setProduit(toSet) ;
     }
 
@@ -74,12 +74,11 @@ public class Formule {
         setQt_mp(toSet) ;
     }
 
-    public static Formule getById(int id) throws Exception {
+    public static Formule getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Formule instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM formule WHERE id = ?";
             st = con.prepareStatement(query);
@@ -89,8 +88,8 @@ public class Formule {
             if (rs.next()) {
                 instance = new Formule();
                 instance.setId(rs.getInt("id"));
-                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp")));
-                instance.setProduit(Produit.getById(rs.getInt("id_produit")));
+                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp") ,con ));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
                 instance.setQt_mp(rs.getDouble("qt_mp"));
             }
         } catch (Exception e) {
@@ -98,7 +97,7 @@ public class Formule {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -117,8 +116,8 @@ public class Formule {
             while (rs.next()) {
                 Formule item = new Formule();
                 item.setId(rs.getInt("id"));
-                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")));
-                item.setProduit(Produit.getById(rs.getInt("id_produit")));
+                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
                 item.setQt_mp(rs.getDouble("qt_mp"));
                 items.add(item);
             }

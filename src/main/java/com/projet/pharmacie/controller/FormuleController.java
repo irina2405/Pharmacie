@@ -18,6 +18,7 @@ public class FormuleController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Formule.getAll());
             Matiere_premiere[] allMp = Matiere_premiere.getAll();
             model.addAttribute("allMp", allMp);
@@ -84,7 +85,8 @@ public class FormuleController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Formule currentFormule = Formule.getById(id);
+            con = MyConnect.getConnection();
+            Formule currentFormule = Formule.getById(id ,con);
             model.addAttribute("currentFormule", currentFormule);
             model.addAttribute("all", Formule.getAll());
             Matiere_premiere[] allMp = Matiere_premiere.getAll();

@@ -18,6 +18,7 @@ public class MaladieController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Maladie.getAll());
             return "Maladie";
         } catch (Exception e) {
@@ -78,7 +79,8 @@ public class MaladieController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Maladie currentMaladie = Maladie.getById(id);
+            con = MyConnect.getConnection();
+            Maladie currentMaladie = Maladie.getById(id ,con);
             model.addAttribute("currentMaladie", currentMaladie);
             model.addAttribute("all", Maladie.getAll());
             return "Maladie";

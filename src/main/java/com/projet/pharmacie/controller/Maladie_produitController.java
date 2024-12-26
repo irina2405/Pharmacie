@@ -18,6 +18,7 @@ public class Maladie_produitController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Maladie_produit.getAll());
             Produit[] allProduit = Produit.getAll();
             model.addAttribute("allProduit", allProduit);
@@ -83,7 +84,8 @@ public class Maladie_produitController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Maladie_produit currentMaladie_produit = Maladie_produit.getById(id);
+            con = MyConnect.getConnection();
+            Maladie_produit currentMaladie_produit = Maladie_produit.getById(id ,con);
             model.addAttribute("currentMaladie_produit", currentMaladie_produit);
             model.addAttribute("all", Maladie_produit.getAll());
             Produit[] allProduit = Produit.getAll();

@@ -18,6 +18,7 @@ public class Histo_prix_produitController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Histo_prix_produit.getAll());
             Produit[] allProduit = Produit.getAll();
             model.addAttribute("allProduit", allProduit);
@@ -82,7 +83,8 @@ public class Histo_prix_produitController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Histo_prix_produit currentHisto_prix_produit = Histo_prix_produit.getById(id);
+            con = MyConnect.getConnection();
+            Histo_prix_produit currentHisto_prix_produit = Histo_prix_produit.getById(id ,con);
             model.addAttribute("currentHisto_prix_produit", currentHisto_prix_produit);
             model.addAttribute("all", Histo_prix_produit.getAll());
             Produit[] allProduit = Produit.getAll();

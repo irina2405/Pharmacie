@@ -37,8 +37,8 @@ public class Maladie_produit {
 
     public void setProduit(String produit) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-        Produit toSet = Produit.getById(Integer.parseInt(produit));
-
+       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
+         con.close();
         setProduit(toSet) ;
     }
 
@@ -52,17 +52,16 @@ public class Maladie_produit {
 
     public void setMaladie(String maladie) throws Exception {
          //define how this type should be conterted from String ... type : Maladie
-        Maladie toSet = Maladie.getById(Integer.parseInt(maladie));
-
+       Connection con = MyConnect.getConnection();        Maladie toSet = Maladie.getById(Integer.parseInt(maladie),con );
+         con.close();
         setMaladie(toSet) ;
     }
 
-    public static Maladie_produit getById(int id) throws Exception {
+    public static Maladie_produit getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Maladie_produit instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM maladie_produit WHERE id = ?";
             st = con.prepareStatement(query);
@@ -72,15 +71,15 @@ public class Maladie_produit {
             if (rs.next()) {
                 instance = new Maladie_produit();
                 instance.setId(rs.getInt("id"));
-                instance.setProduit(Produit.getById(rs.getInt("id_produit")));
-                instance.setMaladie(Maladie.getById(rs.getInt("id_maladie")));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
+                instance.setMaladie(Maladie.getById(rs.getInt("id_maladie") ,con ));
             }
         } catch (Exception e) {
             throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -99,8 +98,8 @@ public class Maladie_produit {
             while (rs.next()) {
                 Maladie_produit item = new Maladie_produit();
                 item.setId(rs.getInt("id"));
-                item.setProduit(Produit.getById(rs.getInt("id_produit")));
-                item.setMaladie(Maladie.getById(rs.getInt("id_maladie")));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
+                item.setMaladie(Maladie.getById(rs.getInt("id_maladie")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {

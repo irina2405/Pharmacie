@@ -18,6 +18,7 @@ public class Matiere_premiereController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Matiere_premiere.getAll());
             Unite[] allUnite = Unite.getAll();
             model.addAttribute("allUnite", allUnite);
@@ -81,7 +82,8 @@ public class Matiere_premiereController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Matiere_premiere currentMatiere_premiere = Matiere_premiere.getById(id);
+            con = MyConnect.getConnection();
+            Matiere_premiere currentMatiere_premiere = Matiere_premiere.getById(id ,con);
             model.addAttribute("currentMatiere_premiere", currentMatiere_premiere);
             model.addAttribute("all", Matiere_premiere.getAll());
             Unite[] allUnite = Unite.getAll();

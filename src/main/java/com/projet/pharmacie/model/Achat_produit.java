@@ -3,15 +3,19 @@ import java.sql.*;
 import java.util.*;
 import com.projet.pharmacie.db.MyConnect;
 import com.projet.pharmacie.util.*;
-public class Histo_prix_produit {
+public class Achat_produit {
     private int id;
-    private java.sql.Date date_;
-    private double prix_vente_produit;
+    private java.sql.Timestamp date_;
+    private double qt_produit;
+    private double denorm_prix_achat;
+    private Fournisseur fournisseur;
     private Produit produit;
-    public Histo_prix_produit(){}
-    public Histo_prix_produit(String date_,String prix_vente_produit,String produit) throws Exception{
+    public Achat_produit(){}
+    public Achat_produit(String date_,String qt_produit,String denorm_prix_achat,String fournisseur,String produit) throws Exception{
         setDate_(date_); 
-        setPrix_vente_produit(prix_vente_produit); 
+        setQt_produit(qt_produit); 
+        setDenorm_prix_achat(denorm_prix_achat); 
+        setFournisseur(fournisseur); 
         setProduit(produit); 
     }
     public int getId() {
@@ -29,34 +33,64 @@ public class Histo_prix_produit {
         setId(toSet) ;
     }
 
-    public java.sql.Date getDate_() {
+    public java.sql.Timestamp getDate_() {
         return date_;
     }
 
-    public void setDate_(java.sql.Date date_) throws Exception {
+    public void setDate_(java.sql.Timestamp date_) throws Exception {
         Util.verifyObjectNotNull(date_, "date_");
         this.date_ = date_;
     }
 
     public void setDate_(String date_) throws Exception {
-        java.sql.Date toSet =  Util.convertDateFromHtmlInput(date_);
+        java.sql.Timestamp toSet =  Util.convertTimestampFromHtmlInput(date_);
 
         setDate_(toSet) ;
     }
 
-    public double getPrix_vente_produit() {
-        return prix_vente_produit;
+    public double getQt_produit() {
+        return qt_produit;
     }
 
-    public void setPrix_vente_produit(double prix_vente_produit) throws Exception {
-        Util.verifyNumericPostive(prix_vente_produit, "prix_vente_produit");
-        this.prix_vente_produit = prix_vente_produit;
+    public void setQt_produit(double qt_produit) throws Exception {
+        Util.verifyNumericPostive(qt_produit, "qt_produit");
+        this.qt_produit = qt_produit;
     }
 
-    public void setPrix_vente_produit(String prix_vente_produit) throws Exception {
-        double toSet =  Util.convertDoubleFromHtmlInput(prix_vente_produit);
+    public void setQt_produit(String qt_produit) throws Exception {
+        double toSet =  Util.convertDoubleFromHtmlInput(qt_produit);
 
-        setPrix_vente_produit(toSet) ;
+        setQt_produit(toSet) ;
+    }
+
+    public double getDenorm_prix_achat() {
+        return denorm_prix_achat;
+    }
+
+    public void setDenorm_prix_achat(double denorm_prix_achat) throws Exception {
+        Util.verifyNumericPostive(denorm_prix_achat, "denorm_prix_achat");
+        this.denorm_prix_achat = denorm_prix_achat;
+    }
+
+    public void setDenorm_prix_achat(String denorm_prix_achat) throws Exception {
+        double toSet =  Util.convertDoubleFromHtmlInput(denorm_prix_achat);
+
+        setDenorm_prix_achat(toSet) ;
+    }
+
+    public Fournisseur getFournisseur() {
+        return fournisseur;
+    }
+
+    public void setFournisseur(Fournisseur fournisseur) throws Exception {
+        this.fournisseur = fournisseur;
+    }
+
+    public void setFournisseur(String fournisseur) throws Exception {
+         //define how this type should be conterted from String ... type : Fournisseur
+       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
+         con.close();
+        setFournisseur(toSet) ;
     }
 
     public Produit getProduit() {
@@ -74,22 +108,24 @@ public class Histo_prix_produit {
         setProduit(toSet) ;
     }
 
-    public static Histo_prix_produit getById(int id, Connection con) throws Exception {
+    public static Achat_produit getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
-        Histo_prix_produit instance = null;
+        Achat_produit instance = null;
 
         try {
-            String query = "SELECT * FROM histo_prix_produit WHERE id = ?";
+            String query = "SELECT * FROM achat_produit WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
 
             if (rs.next()) {
-                instance = new Histo_prix_produit();
+                instance = new Achat_produit();
                 instance.setId(rs.getInt("id"));
-                instance.setDate_(rs.getDate("date_"));
-                instance.setPrix_vente_produit(rs.getDouble("prix_vente_produit"));
+                instance.setDate_(rs.getTimestamp("date_"));
+                instance.setQt_produit(rs.getDouble("qt_produit"));
+                instance.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
+                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
                 instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
             }
         } catch (Exception e) {
@@ -102,22 +138,24 @@ public class Histo_prix_produit {
 
         return instance;
     }
-    public static Histo_prix_produit[] getAll() throws Exception {
+    public static Achat_produit[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
         ResultSet rs = null;
-        List<Histo_prix_produit> items = new ArrayList<>();
+        List<Achat_produit> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM histo_prix_produit order by id asc ";
+            String query = "SELECT * FROM achat_produit order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
             while (rs.next()) {
-                Histo_prix_produit item = new Histo_prix_produit();
+                Achat_produit item = new Achat_produit();
                 item.setId(rs.getInt("id"));
-                item.setDate_(rs.getDate("date_"));
-                item.setPrix_vente_produit(rs.getDouble("prix_vente_produit"));
+                item.setDate_(rs.getTimestamp("date_"));
+                item.setQt_produit(rs.getDouble("qt_produit"));
+                item.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
+                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")  ,con ));
                 item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
                 items.add(item);
             }
@@ -129,17 +167,19 @@ public class Histo_prix_produit {
             if (con != null && !false) con.close();
         }
 
-        return items.toArray(new Histo_prix_produit[0]);
+        return items.toArray(new Achat_produit[0]);
     }
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO histo_prix_produit (date_, prix_vente_produit, id_produit) VALUES (?, ?, ?) RETURNING id";
+            String query = "INSERT INTO achat_produit (date_, qt_produit, denorm_prix_achat, id_fournisseur, id_produit) VALUES (?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
-            st.setDate(1, this.date_);
-            st.setDouble(2, this.prix_vente_produit);
-            st.setInt(3, this.produit.getId());
+            st.setTimestamp(1, this.date_);
+            st.setDouble(2, this.qt_produit);
+            st.setDouble(3, this.denorm_prix_achat);
+            st.setInt(4, this.fournisseur.getId());
+            st.setInt(5, this.produit.getId());
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
@@ -163,12 +203,14 @@ public class Histo_prix_produit {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE histo_prix_produit SET date_ = ?, prix_vente_produit = ?, id_produit = ? WHERE id = ?";
+            String query = "UPDATE achat_produit SET date_ = ?, qt_produit = ?, denorm_prix_achat = ?, id_fournisseur = ?, id_produit = ? WHERE id = ?";
             st = con.prepareStatement(query);
-            st.setDate(1, this.date_);
-            st.setDouble(2, this.prix_vente_produit);
-            st.setInt (3, this.produit.getId());
-            st.setInt(4, this.getId());
+            st.setTimestamp(1, this.date_);
+            st.setDouble(2, this.qt_produit);
+            st.setDouble(3, this.denorm_prix_achat);
+            st.setInt (4, this.fournisseur.getId());
+            st.setInt (5, this.produit.getId());
+            st.setInt(6, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
@@ -184,7 +226,7 @@ public class Histo_prix_produit {
             Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
         try {
-            String query = "DELETE FROM histo_prix_produit WHERE id = ?";
+            String query = "DELETE FROM achat_produit WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             try {

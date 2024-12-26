@@ -34,12 +34,11 @@ public class Unite {
         this.nom = nom;
     }
 
-    public static Unite getById(int id) throws Exception {
+    public static Unite getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Unite instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM unite WHERE id = ?";
             st = con.prepareStatement(query);
@@ -56,7 +55,7 @@ public class Unite {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;

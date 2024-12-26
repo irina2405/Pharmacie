@@ -18,6 +18,7 @@ public class ProduitController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Produit.getAll());
             Unite[] allUnite = Unite.getAll();
             model.addAttribute("allUnite", allUnite);
@@ -82,7 +83,8 @@ public class ProduitController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Produit currentProduit = Produit.getById(id);
+            con = MyConnect.getConnection();
+            Produit currentProduit = Produit.getById(id ,con);
             model.addAttribute("currentProduit", currentProduit);
             model.addAttribute("all", Produit.getAll());
             Unite[] allUnite = Unite.getAll();

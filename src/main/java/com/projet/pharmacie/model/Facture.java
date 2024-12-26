@@ -86,17 +86,16 @@ public class Facture {
 
     public void setClient(String client) throws Exception {
          //define how this type should be conterted from String ... type : Client
-        Client toSet = Client.getById(Integer.parseInt(client));
-
+       Connection con = MyConnect.getConnection();        Client toSet = Client.getById(Integer.parseInt(client),con );
+         con.close();
         setClient(toSet) ;
     }
 
-    public static Facture getById(int id) throws Exception {
+    public static Facture getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Facture instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM facture WHERE id = ?";
             st = con.prepareStatement(query);
@@ -109,14 +108,14 @@ public class Facture {
                 instance.setDate_(rs.getTimestamp("date_"));
                 instance.setTotal(rs.getDouble("total"));
                 instance.setTotal_paye(rs.getDouble("total_paye"));
-                instance.setClient(Client.getById(rs.getInt("id_client")));
+                instance.setClient(Client.getById(rs.getInt("id_client") ,con ));
             }
         } catch (Exception e) {
             throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -138,7 +137,7 @@ public class Facture {
                 item.setDate_(rs.getTimestamp("date_"));
                 item.setTotal(rs.getDouble("total"));
                 item.setTotal_paye(rs.getDouble("total_paye"));
-                item.setClient(Client.getById(rs.getInt("id_client")));
+                item.setClient(Client.getById(rs.getInt("id_client")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {

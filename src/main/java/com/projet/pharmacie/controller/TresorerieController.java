@@ -18,6 +18,7 @@ public class TresorerieController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Tresorerie.getAll());
             return "Tresorerie";
         } catch (Exception e) {
@@ -80,7 +81,8 @@ public class TresorerieController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Tresorerie currentTresorerie = Tresorerie.getById(id);
+            con = MyConnect.getConnection();
+            Tresorerie currentTresorerie = Tresorerie.getById(id ,con);
             model.addAttribute("currentTresorerie", currentTresorerie);
             model.addAttribute("all", Tresorerie.getAll());
             return "Tresorerie";

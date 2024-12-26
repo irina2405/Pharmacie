@@ -18,6 +18,7 @@ public class Achat_mpController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Achat_mp.getAll());
             Fournisseur[] allFournisseur = Fournisseur.getAll();
             model.addAttribute("allFournisseur", allFournisseur);
@@ -86,7 +87,8 @@ public class Achat_mpController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Achat_mp currentAchat_mp = Achat_mp.getById(id);
+            con = MyConnect.getConnection();
+            Achat_mp currentAchat_mp = Achat_mp.getById(id ,con);
             model.addAttribute("currentAchat_mp", currentAchat_mp);
             model.addAttribute("all", Achat_mp.getAll());
             Fournisseur[] allFournisseur = Fournisseur.getAll();

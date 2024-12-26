@@ -39,8 +39,8 @@ public class Detail_facture {
 
     public void setProduit(String produit) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-        Produit toSet = Produit.getById(Integer.parseInt(produit));
-
+       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
+         con.close();
         setProduit(toSet) ;
     }
 
@@ -54,8 +54,8 @@ public class Detail_facture {
 
     public void setFacture(String facture) throws Exception {
          //define how this type should be conterted from String ... type : Facture
-        Facture toSet = Facture.getById(Integer.parseInt(facture));
-
+       Connection con = MyConnect.getConnection();        Facture toSet = Facture.getById(Integer.parseInt(facture),con );
+         con.close();
         setFacture(toSet) ;
     }
 
@@ -74,12 +74,11 @@ public class Detail_facture {
         setDenorm_prix_vente(toSet) ;
     }
 
-    public static Detail_facture getById(int id) throws Exception {
+    public static Detail_facture getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Detail_facture instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM detail_facture WHERE id = ?";
             st = con.prepareStatement(query);
@@ -89,8 +88,8 @@ public class Detail_facture {
             if (rs.next()) {
                 instance = new Detail_facture();
                 instance.setId(rs.getInt("id"));
-                instance.setProduit(Produit.getById(rs.getInt("id_produit")));
-                instance.setFacture(Facture.getById(rs.getInt("id_facture")));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
+                instance.setFacture(Facture.getById(rs.getInt("id_facture") ,con ));
                 instance.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
             }
         } catch (Exception e) {
@@ -98,7 +97,7 @@ public class Detail_facture {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -117,8 +116,8 @@ public class Detail_facture {
             while (rs.next()) {
                 Detail_facture item = new Detail_facture();
                 item.setId(rs.getInt("id"));
-                item.setProduit(Produit.getById(rs.getInt("id_produit")));
-                item.setFacture(Facture.getById(rs.getInt("id_facture")));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
+                item.setFacture(Facture.getById(rs.getInt("id_facture")  ,con ));
                 item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
                 items.add(item);
             }

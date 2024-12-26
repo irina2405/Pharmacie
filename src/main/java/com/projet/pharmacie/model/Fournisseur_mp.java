@@ -41,8 +41,8 @@ public class Fournisseur_mp {
 
     public void setMp(String mp) throws Exception {
          //define how this type should be conterted from String ... type : Matiere_premiere
-        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp));
-
+       Connection con = MyConnect.getConnection();        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
+         con.close();
         setMp(toSet) ;
     }
 
@@ -56,8 +56,8 @@ public class Fournisseur_mp {
 
     public void setFournisseur(String fournisseur) throws Exception {
          //define how this type should be conterted from String ... type : Fournisseur
-        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur));
-
+       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
+         con.close();
         setFournisseur(toSet) ;
     }
 
@@ -91,12 +91,11 @@ public class Fournisseur_mp {
         setDate_(toSet) ;
     }
 
-    public static Fournisseur_mp getById(int id) throws Exception {
+    public static Fournisseur_mp getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Fournisseur_mp instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM fournisseur_mp WHERE id = ?";
             st = con.prepareStatement(query);
@@ -106,8 +105,8 @@ public class Fournisseur_mp {
             if (rs.next()) {
                 instance = new Fournisseur_mp();
                 instance.setId(rs.getInt("id"));
-                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp")));
-                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")));
+                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp") ,con ));
+                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
                 instance.setPrix(rs.getDouble("prix"));
                 instance.setDate_(rs.getDate("date_"));
             }
@@ -116,7 +115,7 @@ public class Fournisseur_mp {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -135,8 +134,8 @@ public class Fournisseur_mp {
             while (rs.next()) {
                 Fournisseur_mp item = new Fournisseur_mp();
                 item.setId(rs.getInt("id"));
-                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")));
-                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")));
+                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
+                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")  ,con ));
                 item.setPrix(rs.getDouble("prix"));
                 item.setDate_(rs.getDate("date_"));
                 items.add(item);

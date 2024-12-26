@@ -88,8 +88,8 @@ public class Achat_mp {
 
     public void setFournisseur(String fournisseur) throws Exception {
          //define how this type should be conterted from String ... type : Fournisseur
-        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur));
-
+       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
+         con.close();
         setFournisseur(toSet) ;
     }
 
@@ -103,17 +103,16 @@ public class Achat_mp {
 
     public void setMp(String mp) throws Exception {
          //define how this type should be conterted from String ... type : Matiere_premiere
-        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp));
-
+       Connection con = MyConnect.getConnection();        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
+         con.close();
         setMp(toSet) ;
     }
 
-    public static Achat_mp getById(int id) throws Exception {
+    public static Achat_mp getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Achat_mp instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM achat_mp WHERE id = ?";
             st = con.prepareStatement(query);
@@ -126,15 +125,15 @@ public class Achat_mp {
                 instance.setDate_(rs.getTimestamp("date_"));
                 instance.setQt_mp(rs.getDouble("qt_mp"));
                 instance.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
-                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")));
-                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp")));
+                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
+                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp") ,con ));
             }
         } catch (Exception e) {
             throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -156,8 +155,8 @@ public class Achat_mp {
                 item.setDate_(rs.getTimestamp("date_"));
                 item.setQt_mp(rs.getDouble("qt_mp"));
                 item.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
-                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")));
-                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")));
+                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")  ,con ));
+                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {

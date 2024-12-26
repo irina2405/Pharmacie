@@ -18,6 +18,7 @@ public class FabricationController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Fabrication.getAll());
             Produit[] allProduit = Produit.getAll();
             model.addAttribute("allProduit", allProduit);
@@ -82,7 +83,8 @@ public class FabricationController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Fabrication currentFabrication = Fabrication.getById(id);
+            con = MyConnect.getConnection();
+            Fabrication currentFabrication = Fabrication.getById(id ,con);
             model.addAttribute("currentFabrication", currentFabrication);
             model.addAttribute("all", Fabrication.getAll());
             Produit[] allProduit = Produit.getAll();

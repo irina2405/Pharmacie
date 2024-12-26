@@ -41,8 +41,8 @@ public class Produit_fournisseur {
 
     public void setFournisseur(String fournisseur) throws Exception {
          //define how this type should be conterted from String ... type : Fournisseur
-        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur));
-
+       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
+         con.close();
         setFournisseur(toSet) ;
     }
 
@@ -56,8 +56,8 @@ public class Produit_fournisseur {
 
     public void setProduit(String produit) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-        Produit toSet = Produit.getById(Integer.parseInt(produit));
-
+       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
+         con.close();
         setProduit(toSet) ;
     }
 
@@ -91,12 +91,11 @@ public class Produit_fournisseur {
         setPrix(toSet) ;
     }
 
-    public static Produit_fournisseur getById(int id) throws Exception {
+    public static Produit_fournisseur getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Produit_fournisseur instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM produit_fournisseur WHERE id = ?";
             st = con.prepareStatement(query);
@@ -106,8 +105,8 @@ public class Produit_fournisseur {
             if (rs.next()) {
                 instance = new Produit_fournisseur();
                 instance.setId(rs.getInt("id"));
-                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")));
-                instance.setProduit(Produit.getById(rs.getInt("id_produit")));
+                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
                 instance.setDate_(rs.getDate("date_"));
                 instance.setPrix(rs.getDouble("prix"));
             }
@@ -116,7 +115,7 @@ public class Produit_fournisseur {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -135,8 +134,8 @@ public class Produit_fournisseur {
             while (rs.next()) {
                 Produit_fournisseur item = new Produit_fournisseur();
                 item.setId(rs.getInt("id"));
-                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")));
-                item.setProduit(Produit.getById(rs.getInt("id_produit")));
+                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")  ,con ));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
                 item.setDate_(rs.getDate("date_"));
                 item.setPrix(rs.getDouble("prix"));
                 items.add(item);

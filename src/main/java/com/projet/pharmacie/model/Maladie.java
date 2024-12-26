@@ -34,12 +34,11 @@ public class Maladie {
         this.nom = nom;
     }
 
-    public static Maladie getById(int id) throws Exception {
+    public static Maladie getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Maladie instance = null;
 
-        Connection con = MyConnect.getConnection();
         try {
             String query = "SELECT * FROM maladie WHERE id = ?";
             st = con.prepareStatement(query);
@@ -56,7 +55,7 @@ public class Maladie {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (con != null && !true) con.close();
         }
 
         return instance;

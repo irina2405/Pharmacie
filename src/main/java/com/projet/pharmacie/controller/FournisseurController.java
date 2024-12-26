@@ -18,6 +18,7 @@ public class FournisseurController {
     public String showAll(Model model) {
         Connection con = null;
         try {
+            con = MyConnect.getConnection();
             model.addAttribute("all", Fournisseur.getAll());
             return "Fournisseur";
         } catch (Exception e) {
@@ -78,7 +79,8 @@ public class FournisseurController {
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Fournisseur currentFournisseur = Fournisseur.getById(id);
+            con = MyConnect.getConnection();
+            Fournisseur currentFournisseur = Fournisseur.getById(id ,con);
             model.addAttribute("currentFournisseur", currentFournisseur);
             model.addAttribute("all", Fournisseur.getAll());
             return "Fournisseur";
