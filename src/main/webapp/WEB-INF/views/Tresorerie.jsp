@@ -32,7 +32,7 @@
             </table>
             <center><nav><ul class="pagination pagination-lg"></ul></nav></center>
             <script src="/assets/myjs/pagination.js"></script>
-            Solde : <%= Util.formatNumber((Double) request.getAttribute("solde")) %> Ar
+            <h3> Solde : <%= Util.formatNumber((Double) request.getAttribute("solde")) %> Ar </h3>
         </div>
         <div class="col-md-1">
         </div>
