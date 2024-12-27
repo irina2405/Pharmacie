@@ -172,6 +172,45 @@ public class Matiere_premiere {
            if (con != null) con.close(); 
         }
     }
+
+    public Produit[] getProduitsConcernes() throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Produit> items = new ArrayList<>();
+
+        try {
+            String query = "with concerned_prod as (" + 
+                                "   select distinct(id_produit) id_produit" + 
+                                "   from Formule " + 
+                                "   where id_mp = ?" + 
+                                ")" + 
+                                "select produit.* " + 
+                                "   FROM produit " + 
+                                "   join CONCERNED_PROD" + 
+                                "   on id = ID_PRODUIT;";
+            st = con.prepareStatement(query);
+            st.setInt(1, getId());
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Produit item = new Produit();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Produit[0]);
+    }
 }
 
 // Commun'IT app

@@ -34,7 +34,7 @@ public class Matiere_premiereController {
         }
 
     }
-
+    
     @PostMapping("/InitMatiere_premiere")
     public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String nom, @RequestParam String unite, @RequestParam(required = false) String mode) {
         Connection con = null;
@@ -98,6 +98,27 @@ public class Matiere_premiereController {
                 try { con.close(); } catch (Exception ignored) {}
             }
         }
+    }
+
+    @GetMapping("/produits_concernes/{id_mp}")
+    public String produits_concernes(Model model , @PathVariable("id_mp") int id_mp) {
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            Matiere_premiere mp = Matiere_premiere.getById(id_mp, con);
+            Produit[] produits_concernes = mp.getProduitsConcernes ();
+            model.addAttribute("all", produits_concernes);
+            return "produits_concernes";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
+            return "Error";
+        } finally {
+            if (con != null) {
+                try { con.close(); } catch (Exception ignored) {}
+            }
+        }
+
     }
 
 }
