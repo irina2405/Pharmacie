@@ -16,7 +16,7 @@
                     <th>Denorm prix vente</th>
                     <th>Unite</th>
                     <th>Actions</th>
-                    <th> </th>
+                    <th>voir les mp concernes</th>
                 </tr>
                 <% for (int i = 0; i < all.length; i++) { %>
                 <tr>

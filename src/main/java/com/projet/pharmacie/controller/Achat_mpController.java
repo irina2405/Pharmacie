@@ -20,10 +20,8 @@ public class Achat_mpController {
         try {
             con = MyConnect.getConnection();
             model.addAttribute("all", Achat_mp.getAll());
-            Fournisseur[] allFournisseur = Fournisseur.getAll();
-            model.addAttribute("allFournisseur", allFournisseur);
-            Matiere_premiere[] allMp = Matiere_premiere.getAll();
-            model.addAttribute("allMp", allMp);
+            Fournisseur_mp[] allFournisseur_mp = Fournisseur_mp.getAllDistinct();
+            model.addAttribute("allFournisseur_mp", allFournisseur_mp);
             return "Achat_mp";
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,24 +36,31 @@ public class Achat_mpController {
     }
 
     @PostMapping("/InitAchat_mp")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String date_, @RequestParam String qt_mp, @RequestParam String denorm_prix_achat, @RequestParam String fournisseur, @RequestParam String mp, @RequestParam(required = false) String mode) {
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String date_, @RequestParam String qt_mp, @RequestParam String fournisseur_mp, @RequestParam(required = false) String mode) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
             Achat_mp instance = new Achat_mp();
             instance.setDate_(date_) ; 
-            instance.setQt_mp(qt_mp) ; 
-            instance.setDenorm_prix_achat(denorm_prix_achat) ; 
-            instance.setFournisseur(fournisseur) ;
-            instance.setMp(mp) ;
+            instance.setQt_mp(qt_mp) ;
+            Fournisseur_mp fournisseur_mp_ = Fournisseur_mp.getById(Integer.parseInt(fournisseur_mp), con);
+            Fournisseur_mp correspondant = Fournisseur_mp.getCorrespondant (fournisseur_mp_.getFournisseur(),fournisseur_mp_.getMp(), date_  ); 
+            instance.setFournisseur_mp(correspondant) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);
             } else {
                 instance.insert(con);
+                Double retrait = correspondant.getPrix()*Double.parseDouble(qt_mp);
+                Tresorerie tresorerie = new Tresorerie(date_, "0", retrait.toString());
+                tresorerie.retirer(con);
             }
+            con.commit();
             return "redirect:/InitAchat_mp";
         } catch (Exception e) {
+            try {
+                con.rollback();
+            } catch (Exception ignored) {System.out.println("ignored e ...............");}
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
             return "Error";
@@ -91,10 +96,8 @@ public class Achat_mpController {
             Achat_mp currentAchat_mp = Achat_mp.getById(id ,con);
             model.addAttribute("currentAchat_mp", currentAchat_mp);
             model.addAttribute("all", Achat_mp.getAll());
-            Fournisseur[] allFournisseur = Fournisseur.getAll();
-            model.addAttribute("allFournisseur", allFournisseur);
-            Matiere_premiere[] allMp = Matiere_premiere.getAll();
-            model.addAttribute("allMp", allMp);
+            Fournisseur_mp[] allFournisseur_mp = Fournisseur_mp.getAll();
+            model.addAttribute("allFournisseur_mp", allFournisseur_mp);
             return "Achat_mp";
         } catch (Exception e) {
             e.printStackTrace();

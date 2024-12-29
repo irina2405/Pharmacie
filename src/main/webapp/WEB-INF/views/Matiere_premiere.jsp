@@ -14,7 +14,9 @@
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Unite</th>
+                    <th>Qt restante</th>
                     <th>Actions</th>
+                    <th>Produits concernes</th>
                     <th> </th>
                 </tr>
                 <% for (int i = 0; i < all.length; i++) { %>
@@ -22,10 +24,12 @@
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getNom() %></td>
                     <td><%= all[i].getUnite() != null ? all[i].getUnite().getNom() : "" %> </td>
+                    <td><%= all[i].getQuantite_restante() %></td>
                     <td>
                         <a href="/TraitMatiere_premiere/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitMatiere_premiere/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
+                    <td><a href="/produits_concernes/<%= all[i].getId() %>">Voir</a></td>
                 </tr>
                 <% } %>
             </table>
