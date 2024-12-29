@@ -43,15 +43,26 @@ public class Achat_produitController {
             Achat_produit instance = new Achat_produit();
             instance.setDate_(date_) ; 
             instance.setQt_produit(qt_produit) ; 
-            instance.setProduit_fournisseur(produit_fournisseur) ;
+            Produit_fournisseur produit_fournisseur_ = Produit_fournisseur.getById(Integer.parseInt(produit_fournisseur), con);
+            Produit_fournisseur correspondant = Produit_fournisseur.getCorrespondant (produit_fournisseur_.getFournisseur(),produit_fournisseur_.getProduit(), date_  ); 
+            instance.setProduit_fournisseur(correspondant) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);
             } else {
                 instance.insert(con);
+                Double retrait = correspondant.getPrix()*Double.parseDouble(qt_produit);
+                Tresorerie tresorerie = new Tresorerie(date_, "0", retrait.toString());
+                tresorerie.retirer(con);
             }
+            con.commit();
             return "redirect:/InitAchat_produit";
         } catch (Exception e) {
+            try {
+                con.rollback();
+            } catch (Exception ignored) {
+                System.out.println("ignored ... ");
+            }
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
             return "Error";

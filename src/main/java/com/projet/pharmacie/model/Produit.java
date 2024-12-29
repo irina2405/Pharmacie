@@ -8,6 +8,11 @@ public class Produit {
     private String nom;
     private double denorm_prix_vente;
     private Unite unite;
+    private double qt_total_du_produit; // Quantité totale achetée
+    private double qt_total_produite_produit; // Quantité totale produite
+    private double qt_total_vendu; // Quantité totale vendue
+    private double qt_actuelle; // Quantité actuelle
+
     public Produit(){}
     public Produit(String nom,String denorm_prix_vente,String unite) throws Exception{
         setNom(nom); 
@@ -68,6 +73,39 @@ public class Produit {
         setUnite(toSet) ;
     }
 
+    public double getQt_total_du_produit() {
+        return qt_total_du_produit;
+    }
+
+    public void setQt_total_du_produit(double qt_total_du_produit) {
+        this.qt_total_du_produit = qt_total_du_produit;
+    }
+
+    public double getQt_total_produite_produit() {
+        return qt_total_produite_produit;
+    }
+
+    public void setQt_total_produite_produit(double qt_total_produite_produit) {
+        this.qt_total_produite_produit = qt_total_produite_produit;
+    }
+
+    public double getQt_total_vendu() {
+        return qt_total_vendu;
+    }
+
+    public void setQt_total_vendu(double qt_total_vendu) {
+        this.qt_total_vendu = qt_total_vendu;
+    }
+
+    public double getQt_actuelle() {
+        return qt_actuelle;
+    }
+
+    public void setQt_actuelle(double qt_actuelle) {
+        this.qt_actuelle = qt_actuelle;
+    }
+
+
     public static Produit getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -103,7 +141,43 @@ public class Produit {
         List<Produit> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM produit order by id asc ";
+            String query = "SELECT * FROM Produit_with_qt order by id asc ";
+            st = con.prepareStatement(query);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Produit item = new Produit();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite"), con));
+                item.setQt_total_du_produit(rs.getDouble("qt_total_du_produit"));
+                item.setQt_total_produite_produit(rs.getDouble("qt_total_produite_produit"));
+                item.setQt_total_vendu(rs.getDouble("qt_total_vendu"));
+                item.setQt_actuelle(
+                    item.getQt_total_produite_produit() + item.getQt_total_du_produit() - item.getQt_total_vendu()
+                );
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Produit[0]);
+    }
+
+    public static Produit[] getProduitAvecFormule() throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Produit> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT produit.* FROM produit join Formule on produit.id = Formule.ID_PRODUIT order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -192,6 +266,72 @@ public class Produit {
             if (st != null) st.close();
            if (con != null) con.close(); 
         }
+    }
+
+    public Matiere_premiere[] getMatiere_premieresConcernes () throws Exception{
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Matiere_premiere> items = new ArrayList<>();
+
+        try {
+            String query = "with concerned_mp as ( " + 
+                                "   select distinct(id_mp) id_mp " + 
+                                "    from Formule  " + 
+                                "    where ID_PRODUIT = ? " + 
+                                " ) " + 
+                                " select mp.*  " + 
+                                "    FROM matiere_premiere mp  " + 
+                                "    join CONCERNED_mp " + 
+                                "    on id = id_mp;";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Matiere_premiere item = new Matiere_premiere();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite"), con));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Matiere_premiere[0]);
+    }
+    public Maladie[] getMaladiesConcernes () throws Exception{
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Maladie> items = new ArrayList<>();
+
+        try {
+            String query = "select maladie.* from maladie join maladie_produit on maladie.id = maladie_produit.id_produit where id_produit = ? ;";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Maladie item = new Maladie();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Maladie[0]);
     }
 }
 

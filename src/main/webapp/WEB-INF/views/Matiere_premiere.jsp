@@ -29,7 +29,7 @@
                         <a href="/TraitMatiere_premiere/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitMatiere_premiere/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
-                    <td><a href="/produits_concernes/<%= all[i].getId() %>">Voir</a></td>
+                    <td><a href="/produits_concernes_par_mp/<%= all[i].getId() %>">Voir</a></td>
                 </tr>
                 <% } %>
             </table>

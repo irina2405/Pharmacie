@@ -101,4 +101,45 @@ public class ProduitController {
         }
     }
 
+    @GetMapping("/maladies_concernes_par_produit/{id_produit}")
+    public String maladies_concernes_par_produit(Model model , @PathVariable("id_produit") int id_produit) {
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            Produit produit = Produit.getById(id_produit, con);
+            Maladie[] maladies_concernes_par_produit = produit.getMaladiesConcernes ();
+            model.addAttribute("all", maladies_concernes_par_produit);
+            return "maladies_concernes_par_produit";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
+            return "Error";
+        } finally {
+            if (con != null) {
+                try { con.close(); } catch (Exception ignored) {}
+            }
+        }
+
+    }
+    @GetMapping("/mp_concernes_par_produit/{id_produit}")
+    public String mp_concernes_par_produit(Model model , @PathVariable("id_produit") int id_produit) {
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            Produit produit = Produit.getById(id_produit, con);
+            Matiere_premiere[] mp_concernes_par_produit = produit.getMatiere_premieresConcernes ();
+            model.addAttribute("all", mp_concernes_par_produit);
+            return "mp_concernes_par_produit";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
+            return "Error";
+        } finally {
+            if (con != null) {
+                try { con.close(); } catch (Exception ignored) {}
+            }
+        }
+
+    }
+
 }
