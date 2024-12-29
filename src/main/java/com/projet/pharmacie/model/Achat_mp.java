@@ -7,16 +7,12 @@ public class Achat_mp {
     private int id;
     private java.sql.Timestamp date_;
     private double qt_mp;
-    private double denorm_prix_achat;
-    private Fournisseur fournisseur;
-    private Matiere_premiere mp;
+    private Fournisseur_mp fournisseur_mp;
     public Achat_mp(){}
-    public Achat_mp(String date_,String qt_mp,String denorm_prix_achat,String fournisseur,String mp) throws Exception{
+    public Achat_mp(String date_,String qt_mp,String fournisseur_mp) throws Exception{
         setDate_(date_); 
         setQt_mp(qt_mp); 
-        setDenorm_prix_achat(denorm_prix_achat); 
-        setFournisseur(fournisseur); 
-        setMp(mp); 
+        setFournisseur_mp(fournisseur_mp); 
     }
     public int getId() {
         return id;
@@ -63,49 +59,19 @@ public class Achat_mp {
         setQt_mp(toSet) ;
     }
 
-    public double getDenorm_prix_achat() {
-        return denorm_prix_achat;
+    public Fournisseur_mp getFournisseur_mp() {
+        return fournisseur_mp;
     }
 
-    public void setDenorm_prix_achat(double denorm_prix_achat) throws Exception {
-        Util.verifyNumericPostive(denorm_prix_achat, "denorm_prix_achat");
-        this.denorm_prix_achat = denorm_prix_achat;
+    public void setFournisseur_mp(Fournisseur_mp fournisseur_mp) throws Exception {
+        this.fournisseur_mp = fournisseur_mp;
     }
 
-    public void setDenorm_prix_achat(String denorm_prix_achat) throws Exception {
-        double toSet =  Util.convertDoubleFromHtmlInput(denorm_prix_achat);
-
-        setDenorm_prix_achat(toSet) ;
-    }
-
-    public Fournisseur getFournisseur() {
-        return fournisseur;
-    }
-
-    public void setFournisseur(Fournisseur fournisseur) throws Exception {
-        this.fournisseur = fournisseur;
-    }
-
-    public void setFournisseur(String fournisseur) throws Exception {
-         //define how this type should be conterted from String ... type : Fournisseur
-       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
+    public void setFournisseur_mp(String fournisseur_mp) throws Exception {
+         //define how this type should be conterted from String ... type : Fournisseur_mp
+       Connection con = MyConnect.getConnection();        Fournisseur_mp toSet = Fournisseur_mp.getById(Integer.parseInt(fournisseur_mp),con );
          con.close();
-        setFournisseur(toSet) ;
-    }
-
-    public Matiere_premiere getMp() {
-        return mp;
-    }
-
-    public void setMp(Matiere_premiere mp) throws Exception {
-        this.mp = mp;
-    }
-
-    public void setMp(String mp) throws Exception {
-         //define how this type should be conterted from String ... type : Matiere_premiere
-       Connection con = MyConnect.getConnection();        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
-         con.close();
-        setMp(toSet) ;
+        setFournisseur_mp(toSet) ;
     }
 
     public static Achat_mp getById(int id, Connection con) throws Exception {
@@ -124,9 +90,7 @@ public class Achat_mp {
                 instance.setId(rs.getInt("id"));
                 instance.setDate_(rs.getTimestamp("date_"));
                 instance.setQt_mp(rs.getDouble("qt_mp"));
-                instance.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
-                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
-                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp") ,con ));
+                instance.setFournisseur_mp(Fournisseur_mp.getById(rs.getInt("id_fournisseur_mp") ,con ));
             }
         } catch (Exception e) {
             throw e ;
@@ -154,9 +118,7 @@ public class Achat_mp {
                 item.setId(rs.getInt("id"));
                 item.setDate_(rs.getTimestamp("date_"));
                 item.setQt_mp(rs.getDouble("qt_mp"));
-                item.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
-                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")  ,con ));
-                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
+                item.setFournisseur_mp(Fournisseur_mp.getById(rs.getInt("id_fournisseur_mp")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -169,26 +131,25 @@ public class Achat_mp {
 
         return items.toArray(new Achat_mp[0]);
     }
+    
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO achat_mp (date_, qt_mp, denorm_prix_achat, id_fournisseur, id_mp) VALUES (?, ?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO achat_mp (date_, qt_mp, id_fournisseur_mp) VALUES (?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setTimestamp(1, this.date_);
             st.setDouble(2, this.qt_mp);
-            st.setDouble(3, this.denorm_prix_achat);
-            st.setInt(4, this.fournisseur.getId());
-            st.setInt(5, this.mp.getId());
+            st.setInt(3, this.fournisseur_mp.getId());
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 
-                    con.commit();
+                    // con.commit();
                     return generatedId;
                 } else {
-                    con.rollback();
+                    // con.rollback();
                     throw new Exception("Failed to retrieve generated ID");
                 }
             } catch (Exception e) {
@@ -203,14 +164,12 @@ public class Achat_mp {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE achat_mp SET date_ = ?, qt_mp = ?, denorm_prix_achat = ?, id_fournisseur = ?, id_mp = ? WHERE id = ?";
+            String query = "UPDATE achat_mp SET date_ = ?, qt_mp = ?, id_fournisseur_mp = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setTimestamp(1, this.date_);
             st.setDouble(2, this.qt_mp);
-            st.setDouble(3, this.denorm_prix_achat);
-            st.setInt (4, this.fournisseur.getId());
-            st.setInt (5, this.mp.getId());
-            st.setInt(6, this.getId());
+            st.setInt (3, this.fournisseur_mp.getId());
+            st.setInt(4, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();

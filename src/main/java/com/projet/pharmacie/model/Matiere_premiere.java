@@ -7,6 +7,9 @@ public class Matiere_premiere {
     private int id;
     private String nom;
     private Unite unite;
+    private double qt_total_mp_achat; // Quantité totale achetée
+    private double qt_total_mp_depense; // Quantité totale dépensée
+    private double quantite_restante; // Quantité restante
     public Matiere_premiere(){}
     public Matiere_premiere(String nom,String unite) throws Exception{
         setNom(nom); 
@@ -51,6 +54,32 @@ public class Matiere_premiere {
         setUnite(toSet) ;
     }
 
+    public double getQt_total_mp_achat() {
+        return qt_total_mp_achat;
+    }
+
+    public void setQt_total_mp_achat(double qt_total_mp_achat) {
+        this.qt_total_mp_achat = qt_total_mp_achat;
+    }
+
+    public double getQt_total_mp_depense() {
+        return qt_total_mp_depense;
+    }
+
+    public void setQt_total_mp_depense(double qt_total_mp_depense) {
+        this.qt_total_mp_depense = qt_total_mp_depense;
+    }
+
+    public double getQuantite_restante() {
+        return quantite_restante;
+    }
+
+    public void setQuantite_restante(double quantite_restante) {
+        this.quantite_restante = quantite_restante;
+    }
+
+
+
     public static Matiere_premiere getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -85,7 +114,7 @@ public class Matiere_premiere {
         List<Matiere_premiere> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM matiere_premiere order by id asc ";
+            String query = "SELECT * FROM MP_with_qt order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -93,7 +122,12 @@ public class Matiere_premiere {
                 Matiere_premiere item = new Matiere_premiere();
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
-                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                item.setUnite(Unite.getById(rs.getInt("id_unite"), con));
+                item.setQt_total_mp_achat(rs.getDouble("qt_total_mp_achat"));
+                item.setQt_total_mp_depense(rs.getDouble("qt_total_mp_depense"));
+                item.setQuantite_restante(
+                    item.getQt_total_mp_achat() - item.getQt_total_mp_depense()
+                );
                 items.add(item);
             }
         } catch (Exception e) {

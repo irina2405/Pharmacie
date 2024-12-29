@@ -60,14 +60,11 @@ CREATE TABLE fabrication(
 
 CREATE TABLE achat_mp(
    id SERIAL,
-   date_ TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   qt_mp NUMERIC(15,2)   NOT NULL CHECK ( qt_mp>=0 ),
-   denorm_prix_achat NUMERIC(15,2)   NOT NULL CHECK (denorm_prix_achat >= 0),
-   id_fournisseur INTEGER NOT NULL,
-   id_mp INTEGER NOT NULL,
+   date_ TIMESTAMP NOT NULL,
+   qt_mp NUMERIC(15,2)   NOT NULL,
+   id_fournisseur_mp INTEGER NOT NULL,
    PRIMARY KEY(id),
-   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id),
-   FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id)
+   FOREIGN KEY(id_fournisseur_mp) REFERENCES Fournisseur_mp(id)
 );
 
 CREATE TABLE facture(
@@ -91,14 +88,20 @@ CREATE TABLE histo_prix_produit(
 
 CREATE TABLE achat_produit(
    id SERIAL,
-   date_ TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   qt_produit NUMERIC(15,2)   NOT NULL CHECK (qt_produit >= 0),
-   denorm_prix_achat NUMERIC(15,2)   NOT NULL CHECK (denorm_prix_achat >=0),
-   id_fournisseur INTEGER NOT NULL,
-   id_produit INTEGER NOT NULL,
+   date_ TIMESTAMP NOT NULL,
+   qt_produit NUMERIC(15,2)   NOT NULL,
+   id_produit_fournisseur INTEGER NOT NULL,
    PRIMARY KEY(id),
-   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id),
-   FOREIGN KEY(id_produit) REFERENCES produit(id)
+   FOREIGN KEY(id_produit_fournisseur) REFERENCES produit_fournisseur(id)
+);
+
+CREATE TABLE achat_produit(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   qt_produit NUMERIC(15,2)   NOT NULL,
+   id_produit_fournisseur INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_produit_fournisseur) REFERENCES produit_fournisseur(id)
 );
 
 CREATE TABLE fournisseur_mp(
@@ -110,6 +113,10 @@ CREATE TABLE fournisseur_mp(
    FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id),
    FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id)
 );
+select *,
+   ROW_NUMBER() over (PARTITION by id_mp, id_fournisseur order by date_ desc)
+   from fournisseur_mp;
+
 
 CREATE TABLE produit_fournisseur(
    id SERIAL PRIMARY KEY,
