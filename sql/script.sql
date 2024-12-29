@@ -95,14 +95,6 @@ CREATE TABLE achat_produit(
    FOREIGN KEY(id_produit_fournisseur) REFERENCES produit_fournisseur(id)
 );
 
-CREATE TABLE achat_produit(
-   id SERIAL,
-   date_ TIMESTAMP NOT NULL,
-   qt_produit NUMERIC(15,2)   NOT NULL,
-   id_produit_fournisseur INTEGER NOT NULL,
-   PRIMARY KEY(id),
-   FOREIGN KEY(id_produit_fournisseur) REFERENCES produit_fournisseur(id)
-);
 
 CREATE TABLE fournisseur_mp(
    id SERIAL PRIMARY KEY,
@@ -113,9 +105,6 @@ CREATE TABLE fournisseur_mp(
    FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id),
    FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id)
 );
-select *,
-   ROW_NUMBER() over (PARTITION by id_mp, id_fournisseur order by date_ desc)
-   from fournisseur_mp;
 
 
 CREATE TABLE produit_fournisseur(
