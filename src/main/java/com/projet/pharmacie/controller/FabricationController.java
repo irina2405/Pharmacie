@@ -20,7 +20,7 @@ public class FabricationController {
         try {
             con = MyConnect.getConnection();
             model.addAttribute("all", Fabrication.getAll());
-            Produit[] allProduit = Produit.getAll();
+            Produit[] allProduit = Produit.getProduitAvecFormule();
             model.addAttribute("allProduit", allProduit);
             return "Fabrication";
         } catch (Exception e) {

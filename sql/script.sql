@@ -132,7 +132,7 @@ CREATE TABLE maladie_produit(
    id_maladie INTEGER NOT NULL ,
    FOREIGN KEY(id_produit) REFERENCES produit(id),
    FOREIGN KEY(id_maladie) REFERENCES maladie(id)
-);
+); 
 
 CREATE TABLE detail_facture(
    id SERIAL PRIMARY KEY,

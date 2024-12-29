@@ -14,20 +14,25 @@
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Denorm prix vente</th>
+                    <th>Qt actuelle</th>
                     <th>Unite</th>
                     <th>Actions</th>
                     <th>voir les mp concernes</th>
+                    <th>voir les maladies concernes</th>
                 </tr>
                 <% for (int i = 0; i < all.length; i++) { %>
                 <tr>
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getNom() %></td>
                     <td><%= all[i].getDenorm_prix_vente() %></td>
+                    <td><%= all[i].getQt_actuelle() %></td>
                     <td><%= all[i].getUnite() != null ? all[i].getUnite().getNom() : "" %> </td>
                     <td>
                         <a href="/TraitProduit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitProduit/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
+                                        <td><a href="/mp_concernes_par_produit/<%= all[i].getId() %>">Voir</a></td>
+                                        <td><a href="/maladies_concernes_par_produit/<%= all[i].getId() %>">Voir</a></td>
                 </tr>
                 <% } %>
             </table>

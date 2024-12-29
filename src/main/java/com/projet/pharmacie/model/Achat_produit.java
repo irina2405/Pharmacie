@@ -146,14 +146,14 @@ public class Achat_produit {
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 
-                    con.commit();
+                    // con.commit();
                     return generatedId;
                 } else {
-                    con.rollback();
+                    // con.rollback();
                     throw new Exception("Failed to retrieve generated ID");
                 }
             } catch (Exception e) {
-                con.rollback();
+                // con.rollback();
                 throw new Exception("Failed to insert record", e);
             }
         } finally {
