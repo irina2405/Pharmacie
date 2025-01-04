@@ -116,7 +116,6 @@ public class Fournisseur_mp {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;

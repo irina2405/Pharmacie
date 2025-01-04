@@ -1,6 +1,8 @@
 package com.projet.pharmacie.controller;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +38,11 @@ public class FabricationController {
     }
 
     @PostMapping("/InitFabrication")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String date_, @RequestParam String qt_produit, @RequestParam String produit, @RequestParam(required = false) String mode) {
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam(required = false) String date_, @RequestParam String qt_produit, @RequestParam String produit, @RequestParam(required = false) String mode) {
         Connection con = null;
+        if (date_==null || date_.isEmpty()) {
+            date_ = (new Timestamp(System.currentTimeMillis())).toString();
+        }
         try {
             con = MyConnect.getConnection();
             Fabrication instance = new Fabrication();

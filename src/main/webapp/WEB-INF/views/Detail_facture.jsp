@@ -16,6 +16,7 @@
                     <th>Produit</th>
                     <th>Facture</th>
                     <th>Denorm prix vente</th>
+                    <th>Qt produit</th>
                     <th>Actions</th>
                     <th> </th>
                 </tr>
@@ -25,9 +26,10 @@
                     <td><%= all[i].getProduit() != null ? all[i].getProduit().getNom() : "" %> </td>
                     <td><%= all[i].getFacture() != null ? all[i].getFacture().getDate_() : "" %> </td>
                     <td><%= all[i].getDenorm_prix_vente() %></td>
+                    <td><%= all[i].getQt_produit() %></td>
                     <td>
-                        <a href="/TraitDetail_facture/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                        <a href="/InitDetail_facture/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                        <%-- <a href="/TraitDetail_facture/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> --%>
+                        <%-- <a href="/InitDetail_facture/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a> --%>
                     </td>
                 </tr>
                 <% } %>
@@ -64,6 +66,10 @@
                 <div class="form-group">
                     <label for="denorm_prix_vente">Denorm prix vente</label>
                     <input type="number" name="denorm_prix_vente" id="denorm_prix_vente" class="form-control" value="<%= currentDetail_facture != null ? currentDetail_facture.getDenorm_prix_vente() : "" %>">
+                </div>
+                <div class="form-group">
+                    <label for="qt_produit">Qt produit</label>
+                    <input type="number" name="qt_produit" id="qt_produit" class="form-control" value="<%= currentDetail_facture != null ? currentDetail_facture.getQt_produit() : "" %>">
                 </div>
                 <button type="submit" class="btn btn-default">Valider</button>
             </form>

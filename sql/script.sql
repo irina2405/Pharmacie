@@ -20,6 +20,7 @@ CREATE TABLE maladie(
 
 CREATE TABLE tresorerie(
    id SERIAL,
+   motif VARCHAR(50) default '',
    date_ TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    depot NUMERIC(15,2) CHECK (depot >= 0)  ,
    retrait NUMERIC(15,2) CHECK (retrait >=0) ,
@@ -53,6 +54,7 @@ CREATE TABLE fabrication(
    id SERIAL,
    date_ TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    qt_produit NUMERIC(15,2)   NOT NULL  CHECK (qt_produit>=0),
+   cout NUMERIC(15,2)  ,
    id_produit INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_produit) REFERENCES produit(id)
@@ -62,6 +64,7 @@ CREATE TABLE achat_mp(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
    qt_mp NUMERIC(15,2)   NOT NULL,
+   reste_mp NUMERIC(15,2)  ,
    id_fournisseur_mp INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_fournisseur_mp) REFERENCES Fournisseur_mp(id)
@@ -137,7 +140,7 @@ CREATE TABLE maladie_produit(
 CREATE TABLE detail_facture(
    id SERIAL PRIMARY KEY,
    id_produit INTEGER NOT NULL ,
-   id_facture INTEGER NOT NULL ,
+   id_facture INTEGER NOT NULL on DELETE CASCADE ,
    denorm_prix_vente NUMERIC(15,2)   NOT NULL CHECK (denorm_prix_vente >=0),
    qt_produit NUMERIC(15,2)   NOT NULL CHECK (qt_produit >= 0),
    FOREIGN KEY(id_produit) REFERENCES produit(id),

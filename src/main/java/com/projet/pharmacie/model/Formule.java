@@ -97,11 +97,11 @@ public class Formule {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
     }
+    
     public static Formule[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
@@ -198,6 +198,96 @@ public class Formule {
             if (st != null) st.close();
            if (con != null) con.close(); 
         }
+    }
+
+    public static Formule[] search(String mp , String produit , String qt_min , String qt_max) throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Formule> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM formule where 1=1 ";
+            if (mp!=null && !mp.isEmpty()) {
+                query+= " and id_mp = ?";
+            }
+            if (produit!=null && !produit.isEmpty()) {
+                query+= " and id_produit = ?";
+            }
+            if (qt_min!=null && !qt_min.isEmpty()) {
+                query+= " and qt_mp >= ?";
+            }
+            if (qt_max!=null && !qt_max.isEmpty()) {
+                query+= " and qt_mp <= ?";
+            }
+            st = con.prepareStatement(query);
+            int h = 1;
+            if (mp!=null && !mp.isEmpty()) {
+                st.setInt(h, Integer.parseInt(mp));
+                h++;
+            }
+            if (produit!=null && !produit.isEmpty()) {
+                st.setInt(h, Integer.parseInt(produit));
+                h++;
+            }
+            if (qt_min!=null && !qt_min.isEmpty()) {
+                st.setDouble(h, Double.parseDouble(qt_min));
+                h++;
+            }
+            if (qt_max!=null && !qt_max.isEmpty()) {
+                st.setDouble(h, Double.parseDouble(qt_max));
+            }
+
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Formule item = new Formule();
+                item.setId(rs.getInt("id"));
+                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
+                item.setQt_mp(rs.getDouble("qt_mp"));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Formule[0]);
+    }
+
+    public static Formule[] getFormulesForProduct(int idProduit) throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Formule> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM formule where id_produit = ? order by id asc ";
+            st = con.prepareStatement(query);
+            st.setInt(1, idProduit);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Formule item = new Formule();
+                item.setId(rs.getInt("id"));
+                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
+                item.setQt_mp(rs.getDouble("qt_mp"));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Formule[0]);
     }
 }
 

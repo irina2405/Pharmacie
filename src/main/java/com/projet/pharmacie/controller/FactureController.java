@@ -47,9 +47,9 @@ public class FactureController {
             instance.setClient(client) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
-                instance.update(con);
+                instance.updateUncommitted(con);
             } else {
-                instance.insert(con);
+                instance.insertUncommitted(con);
             }
             return "redirect:/InitFacture";
         } catch (Exception e) {

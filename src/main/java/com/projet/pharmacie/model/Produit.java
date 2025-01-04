@@ -1,5 +1,6 @@
 package com.projet.pharmacie.model;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 import com.projet.pharmacie.db.MyConnect;
 import com.projet.pharmacie.util.*;
@@ -12,6 +13,8 @@ public class Produit {
     private double qt_total_produite_produit; // Quantité totale produite
     private double qt_total_vendu; // Quantité totale vendue
     private double qt_actuelle; // Quantité actuelle
+
+    private double qtPanier;
 
     public Produit(){}
     public Produit(String nom,String denorm_prix_vente,String unite) throws Exception{
@@ -105,6 +108,19 @@ public class Produit {
         this.qt_actuelle = qt_actuelle;
     }
 
+    public double getQtPanier() {
+        return qtPanier;
+    }
+
+    public void setQtPanier(double qtPanier) {
+        this.qtPanier = qtPanier;
+    }
+
+    public Formule[] getFormule() throws Exception {
+        Formule[] formule = Formule.getFormulesForProduct(id);
+        return formule;
+    }
+
 
     public static Produit getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
@@ -123,6 +139,37 @@ public class Produit {
                 instance.setNom(rs.getString("nom"));
                 instance.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
                 instance.setUnite(Unite.getById(rs.getInt("id_unite") ,con ));
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !true) con.close();
+        }
+
+        return instance;
+    }
+    public Histo_prix_produit getLast () throws Exception{
+        //;
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        Histo_prix_produit instance = null;
+
+        try {
+            con = MyConnect.getConnection();
+            String query = "select distinct on (id_produit) histo_prix_produit.* from histo_prix_produit  WHERE id = ? order by id_produit , date_ desc";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                instance = new Histo_prix_produit();
+                instance.setId(rs.getInt("id"));
+                instance.setDate_(rs.getDate("date_"));
+                instance.setPrix_vente_produit(rs.getDouble("prix_vente_produit"));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
             }
         } catch (Exception e) {
             throw e ;
@@ -213,6 +260,11 @@ public class Produit {
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 
+                    Histo_prix_produit histo_prix_produit = new Histo_prix_produit();
+                    histo_prix_produit.setDate_(new Date(System.currentTimeMillis()));
+                    histo_prix_produit.setPrix_vente_produit(this.denorm_prix_vente);
+                    histo_prix_produit.setProduit(this);
+                    histo_prix_produit.insertUncommited(con);
                     con.commit();
                     return generatedId;
                 } else {
@@ -239,6 +291,11 @@ public class Produit {
             st.setInt(4, this.getId());
             try {
                 st.executeUpdate();
+                Histo_prix_produit histo_prix_produit = new Histo_prix_produit();
+                histo_prix_produit.setDate_(new Date(System.currentTimeMillis()));
+                histo_prix_produit.setPrix_vente_produit(this.denorm_prix_vente);
+                histo_prix_produit.setProduit(this);
+                histo_prix_produit.insertUncommited(con);
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
@@ -333,6 +390,17 @@ public class Produit {
 
         return items.toArray(new Maladie[0]);
     }
+
+    public static double getTotal(HashMap<Integer, Produit> panier) {
+        double total = 0.0;
+        if (panier != null) {
+            for (Produit produit : panier.values()) {
+                total += produit.getDenorm_prix_vente() * produit.getQtPanier();
+            }
+        }
+        return total;
+    }
+    
 }
 
 // Commun'IT app

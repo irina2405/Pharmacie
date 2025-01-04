@@ -14,6 +14,7 @@
                     <th>Id</th>
                     <th>Date </th>
                     <th>Qt mp</th>
+                    <th>Reste mp</th>   
                     <th>Fournisseur mp</th>
                     <th>Actions</th>
                     <th> </th>
@@ -23,10 +24,11 @@
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getDate_() %></td>
                     <td><%= all[i].getQt_mp() %></td>
+                    <td><%= all[i].getReste_mp() %></td>
                     <td><%= all[i].getFournisseur_mp() != null ? all[i].getFournisseur_mp().getId() + " -- " + all[i].getFournisseur_mp().getFournisseur().getNom() + " -- " + all[i].getFournisseur_mp().getMp().getNom() + " -- " + all[i].getFournisseur_mp().getPrix() : "" %> </td>
                     <td>
                         <%-- <a href="/TraitAchat_mp/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> --%>
-                        <a href="/InitAchat_mp/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                        <%-- <a href="/InitAchat_mp/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a> --%>
                     </td>
                 </tr>
                 <% } %>

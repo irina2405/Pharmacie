@@ -5,11 +5,13 @@ import com.projet.pharmacie.db.MyConnect;
 import com.projet.pharmacie.util.*;
 public class Tresorerie {
     private int id;
+    private String motif;
     private java.sql.Timestamp date_;
     private double depot;
     private double retrait;
     public Tresorerie(){}
-    public Tresorerie(String date_,String depot,String retrait) throws Exception{
+    public Tresorerie(String motif,String date_,String depot,String retrait) throws Exception{
+        setMotif(motif); 
         setDate_(date_); 
         setDepot(depot); 
         setRetrait(retrait); 
@@ -27,6 +29,15 @@ public class Tresorerie {
         int toSet =  Util.convertIntFromHtmlInput(id);
 
         setId(toSet) ;
+    }
+
+    public String getMotif() {
+        return motif;
+    }
+
+    public void setMotif(String motif) throws Exception {
+        Util.verifyStringNotNullOrEmpty(motif, "motif");
+        this.motif = motif;
     }
 
     public java.sql.Timestamp getDate_() {
@@ -88,6 +99,7 @@ public class Tresorerie {
             if (rs.next()) {
                 instance = new Tresorerie();
                 instance.setId(rs.getInt("id"));
+                instance.setMotif(rs.getString("motif"));
                 instance.setDate_(rs.getTimestamp("date_"));
                 instance.setDepot(rs.getDouble("depot"));
                 instance.setRetrait(rs.getDouble("retrait"));
@@ -116,6 +128,7 @@ public class Tresorerie {
             while (rs.next()) {
                 Tresorerie item = new Tresorerie();
                 item.setId(rs.getInt("id"));
+                item.setMotif(rs.getString("motif"));
                 item.setDate_(rs.getTimestamp("date_"));
                 item.setDepot(rs.getDouble("depot"));
                 item.setRetrait(rs.getDouble("retrait"));
@@ -131,15 +144,16 @@ public class Tresorerie {
 
         return items.toArray(new Tresorerie[0]);
     }
-    public int insert(Connection con) throws Exception {
+    public int insertUncommitted(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO tresorerie (date_, depot, retrait) VALUES (?, ?, ?) RETURNING id";
+            String query = "INSERT INTO tresorerie (motif, date_, depot, retrait) VALUES (?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
-            st.setTimestamp(1, this.date_);
-            st.setDouble(2, this.depot);
-            st.setDouble(3, this.retrait);
+            st.setString(1, this.motif);
+            st.setTimestamp(2, this.date_);
+            st.setDouble(3, this.depot);
+            st.setDouble(4, this.retrait);
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
@@ -160,21 +174,52 @@ public class Tresorerie {
             if (st != null) st.close();
         }
     }
+    public int insert(Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            String query = "INSERT INTO tresorerie (motif, date_, depot, retrait) VALUES (?, ?, ?, ?) RETURNING id";
+            st = con.prepareStatement(query);
+            st.setString(1, this.motif);
+            st.setTimestamp(2, this.date_);
+            st.setDouble(3, this.depot);
+            st.setDouble(4, this.retrait);
+            try {
+                rs = st.executeQuery();
+                if (rs.next()) {
+                    int generatedId = rs.getInt("id");
+                    this.setId(generatedId); 
+                    con.commit();
+                    return generatedId;
+                } else {
+                    con.rollback();
+                    throw new Exception("Failed to retrieve generated ID");
+                }
+            } catch (Exception e) {
+                con.rollback();
+                throw new Exception("Failed to insert record", e);
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+        }
+    }
     public void retirer(Connection con) throws Exception {
         if (getSolde(date_) < retrait) {
             throw new Exception("solde insuffisant") ;
         }
-        this.insert(con);
+        this.insertUncommitted(con);
     }
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE tresorerie SET date_ = ?, depot = ?, retrait = ? WHERE id = ?";
+            String query = "UPDATE tresorerie SET motif = ?, date_ = ?, depot = ?, retrait = ? WHERE id = ?";
             st = con.prepareStatement(query);
-            st.setTimestamp(1, this.date_);
-            st.setDouble(2, this.depot);
-            st.setDouble(3, this.retrait);
-            st.setInt(4, this.getId());
+            st.setString(1, this.motif);
+            st.setTimestamp(2, this.date_);
+            st.setDouble(3, this.depot);
+            st.setDouble(4, this.retrait);
+            st.setInt(5, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
@@ -205,7 +250,6 @@ public class Tresorerie {
            if (con != null) con.close(); 
         }
     }
-
     public static double getSolde (Timestamp d) throws Exception{
         double rep = 0.0;
         Connection con = null;

@@ -18,6 +18,7 @@ CREATE TABLE maladie(
 
 CREATE TABLE tresorerie(
    id SERIAL,
+   motif VARCHAR(50) ,
    date_ TIMESTAMP NOT NULL,
    depot NUMERIC(15,2)  ,
    retrait NUMERIC(15,2)  ,
@@ -51,6 +52,7 @@ CREATE TABLE fabrication(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
    qt_produit NUMERIC(15,2)   NOT NULL,
+   cout NUMERIC(15,2)  ,
    id_1 INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_1) REFERENCES produit(id)
@@ -101,6 +103,7 @@ CREATE TABLE achat_mp(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
    qt_mp NUMERIC(15,2)   NOT NULL,
+   reste_mp NUMERIC(15,2)  ,
    id_1 INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_1) REFERENCES Fournisseur_mp(id)

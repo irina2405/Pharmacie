@@ -38,7 +38,7 @@ public class Detail_factureController {
     }
 
     @PostMapping("/InitDetail_facture")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String produit, @RequestParam String facture, @RequestParam String denorm_prix_vente, @RequestParam(required = false) String mode) {
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String produit, @RequestParam String facture, @RequestParam String denorm_prix_vente, @RequestParam String qt_produit, @RequestParam(required = false) String mode) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
@@ -46,6 +46,7 @@ public class Detail_factureController {
             instance.setProduit(produit) ;
             instance.setFacture(facture) ;
             instance.setDenorm_prix_vente(denorm_prix_vente) ; 
+            instance.setQt_produit(qt_produit) ; 
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);

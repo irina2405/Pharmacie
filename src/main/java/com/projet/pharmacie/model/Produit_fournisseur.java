@@ -229,7 +229,7 @@ public class Produit_fournisseur {
 
         try {
             con = MyConnect.getConnection();
-            String query = "SELECT DISTINCT ON (id_mp, id_fournisseur) * FROM Produit_fournisseur WHERE id_fournisseur = ? and id_mp = ? and date_ <= ? order by id_mp, id_fournisseur, date_ DESC ";
+            String query = "SELECT DISTINCT ON (id_produit, id_fournisseur) * FROM Produit_fournisseur WHERE id_fournisseur = ? and id_produit = ? and date_ <= ? order by id_produit, id_fournisseur, date_ DESC ";
             st = con.prepareStatement(query);
             st.setInt(1, fournisseur.getId() );
             st.setInt(2, produit.getId() );
@@ -239,7 +239,7 @@ public class Produit_fournisseur {
             if (rs.next()) {
                 instance = new Produit_fournisseur();
                 instance.setId(rs.getInt("id"));
-                instance.setProduit(Produit.getById(rs.getInt("id_mp") ,con ));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
                 instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
                 instance.setPrix(rs.getDouble("prix"));
                 instance.setDate_(rs.getDate("date_"));

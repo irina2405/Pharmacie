@@ -101,14 +101,14 @@ public class Matiere_premiereController {
     }
 
     @GetMapping("/produits_concernes_par_mp/{id_mp}")
-    public String _par_mp(Model model , @PathVariable("id_mp") int id_mp) {
+    public String produits_concernes_par_mp(Model model , @PathVariable("id_mp") int id_mp) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
             Matiere_premiere mp = Matiere_premiere.getById(id_mp, con);
             Produit[] produits_concernes_par_mp = mp.getProduitsConcernes ();
             model.addAttribute("all", produits_concernes_par_mp);
-            return "produits_concernes_par_mp";
+            return "produits_concernes";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 

@@ -97,7 +97,6 @@ public class Histo_prix_produit {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -131,6 +130,36 @@ public class Histo_prix_produit {
 
         return items.toArray(new Histo_prix_produit[0]);
     }
+    public int insertUncommited(Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            String query = "INSERT INTO histo_prix_produit (date_, prix_vente_produit, id_produit) VALUES (?, ?, ?) RETURNING id";
+            st = con.prepareStatement(query);
+            st.setDate(1, this.date_);
+            st.setDouble(2, this.prix_vente_produit);
+            st.setInt(3, this.produit.getId());
+            try {
+                rs = st.executeQuery();
+                if (rs.next()) {
+                    int generatedId = rs.getInt("id");
+                    this.setId(generatedId); 
+                    // con.commit();
+                    return generatedId;
+                } else {
+                    // con.rollback();
+                    throw new Exception("Failed to retrieve generated ID");
+                }
+            } catch (Exception e) {
+                con.rollback();
+                throw new Exception("Failed to insert record", e);
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+        }
+    }
+
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;

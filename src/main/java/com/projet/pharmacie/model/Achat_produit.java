@@ -98,7 +98,6 @@ public class Achat_produit {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -190,6 +189,10 @@ public class Achat_produit {
             st.setInt(1, id);
             try {
                 st.executeUpdate();
+                Achat_produit me = Achat_produit.getById(id, con);
+                Double depot = me.getQt_produit()* me.getProduit_fournisseur().getPrix();
+                Tresorerie tresorerie = new Tresorerie("annulation achat produit " , (new Timestamp(System.currentTimeMillis())).toString(),depot.toString(), "0" );
+                tresorerie.insertUncommitted(con);
                 con.commit();
             } catch (Exception e) {
                 con.rollback();

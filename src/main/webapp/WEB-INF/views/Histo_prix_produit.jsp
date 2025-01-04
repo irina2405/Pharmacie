@@ -25,8 +25,8 @@
                     <td><%= all[i].getPrix_vente_produit() %></td>
                     <td><%= all[i].getProduit() != null ? all[i].getProduit().getNom() : "" %> </td>
                     <td>
-                        <a href="/TraitHisto_prix_produit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                        <a href="/InitHisto_prix_produit/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                        <%-- <a href="/TraitHisto_prix_produit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> --%>
+                        <%-- <a href="/InitHisto_prix_produit/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a> --%>
                     </td>
                 </tr>
                 <% } %>

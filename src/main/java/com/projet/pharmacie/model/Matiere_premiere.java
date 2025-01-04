@@ -86,7 +86,7 @@ public class Matiere_premiere {
         Matiere_premiere instance = null;
 
         try {
-            String query = "SELECT * FROM matiere_premiere WHERE id = ?";
+            String query = "SELECT * FROM MP_with_qt WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -96,6 +96,11 @@ public class Matiere_premiere {
                 instance.setId(rs.getInt("id"));
                 instance.setNom(rs.getString("nom"));
                 instance.setUnite(Unite.getById(rs.getInt("id_unite") ,con ));
+                instance.setQt_total_mp_achat(rs.getDouble("qt_total_mp_achat"));
+                instance.setQt_total_mp_depense(rs.getDouble("qt_total_mp_depense"));
+                instance.setQuantite_restante(
+                    instance.getQt_total_mp_achat() - instance.getQt_total_mp_depense()
+                );
             }
         } catch (Exception e) {
             throw e ;

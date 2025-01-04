@@ -8,11 +8,13 @@ public class Detail_facture {
     private Produit produit;
     private Facture facture;
     private double denorm_prix_vente;
+    private double qt_produit;
     public Detail_facture(){}
-    public Detail_facture(String produit,String facture,String denorm_prix_vente) throws Exception{
+    public Detail_facture(String produit,String facture,String denorm_prix_vente,String qt_produit) throws Exception{
         setProduit(produit); 
         setFacture(facture); 
         setDenorm_prix_vente(denorm_prix_vente); 
+        setQt_produit(qt_produit); 
     }
     public int getId() {
         return id;
@@ -74,6 +76,21 @@ public class Detail_facture {
         setDenorm_prix_vente(toSet) ;
     }
 
+    public double getQt_produit() {
+        return qt_produit;
+    }
+
+    public void setQt_produit(double qt_produit) throws Exception {
+        Util.verifyNumericPostive(qt_produit, "qt_produit");
+        this.qt_produit = qt_produit;
+    }
+
+    public void setQt_produit(String qt_produit) throws Exception {
+        double toSet =  Util.convertDoubleFromHtmlInput(qt_produit);
+
+        setQt_produit(toSet) ;
+    }
+
     public static Detail_facture getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -91,13 +108,13 @@ public class Detail_facture {
                 instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
                 instance.setFacture(Facture.getById(rs.getInt("id_facture") ,con ));
                 instance.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                instance.setQt_produit(rs.getDouble("qt_produit"));
             }
         } catch (Exception e) {
             throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -119,6 +136,7 @@ public class Detail_facture {
                 item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
                 item.setFacture(Facture.getById(rs.getInt("id_facture")  ,con ));
                 item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setQt_produit(rs.getDouble("qt_produit"));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -135,11 +153,12 @@ public class Detail_facture {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO detail_facture (id_produit, id_facture, denorm_prix_vente) VALUES (?, ?, ?) RETURNING id";
+            String query = "INSERT INTO detail_facture (id_produit, id_facture, denorm_prix_vente, qt_produit) VALUES (?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setInt(1, this.produit.getId());
             st.setInt(2, this.facture.getId());
             st.setDouble(3, this.denorm_prix_vente);
+            st.setDouble(4, this.qt_produit);
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
@@ -163,12 +182,13 @@ public class Detail_facture {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE detail_facture SET id_produit = ?, id_facture = ?, denorm_prix_vente = ? WHERE id = ?";
+            String query = "UPDATE detail_facture SET id_produit = ?, id_facture = ?, denorm_prix_vente = ?, qt_produit = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt (1, this.produit.getId());
             st.setInt (2, this.facture.getId());
             st.setDouble(3, this.denorm_prix_vente);
-            st.setInt(4, this.getId());
+            st.setDouble(4, this.qt_produit);
+            st.setInt(5, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();

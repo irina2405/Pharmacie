@@ -13,7 +13,7 @@
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Actions</th>
-                    <th> </th>
+                    <th>Voir Produit concernes</th>
                 </tr>
                 <% for (int i = 0; i < all.length; i++) { %>
                 <tr>
@@ -23,6 +23,7 @@
                         <a href="/TraitMaladie/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitMaladie/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
+                    <td><a href="/produits_concernes_par_maladie/<%= all[i].getId() %>">Voir</a></td>
                 </tr>
                 <% } %>
             </table>

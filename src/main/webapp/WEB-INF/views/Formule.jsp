@@ -10,6 +10,45 @@
     %>
     <div class="row">
         <div class="col-md-7 tableContainer ">
+            <div class="row">
+                <form action="/InitFormule" method="get">
+                    <input type="hidden" name="search" value="true">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="mp">Matière Première</label>
+                                <select name="mp" id="mp" class="form-control">
+                                    <option value="">-- choose --</option>
+                                    <% for (int j = 0; j < allMp.length; j++) { %>
+                                        <option value="<%= allMp[j].getId() %>"><%= allMp[j].getNom() %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="produit">Produit</label>
+                                <select name="produit" id="produit" class="form-control">
+                                    <option value="">-- choose --</option>
+                                    <% for (int j = 0; j < allProduit.length; j++) { %>
+                                        <option value="<%= allProduit[j].getId() %>"><%= allProduit[j].getNom() %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="qt_mp_min">Qt mp min</label>
+                                <input type="number" name="qt_mp_min" id="qt_mp_min" class="form-control" value="">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="qt_mp_max">Qt mp max</label>
+                                <input type="number" name="qt_mp_max" id="qt_mp_max" class="form-control" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default">Valider</button>
+                    </div>
+                </form>
+                
+            </div>
             <table class="table table-striped" id="table">
                 <tr>
                     <th>Id</th>
