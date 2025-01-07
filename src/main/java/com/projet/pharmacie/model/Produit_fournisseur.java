@@ -10,9 +10,9 @@ public class Produit_fournisseur {
     private java.sql.Date date_;
     private double prix;
     public Produit_fournisseur(){}
-    public Produit_fournisseur(String fournisseur,String produit,String date_,String prix) throws Exception{
-        setFournisseur(fournisseur); 
-        setProduit(produit); 
+    public Produit_fournisseur(String fournisseur,String produit,String date_,String prix,Connection con) throws Exception{
+        setFournisseur(fournisseur,con); 
+        setProduit(produit,con); 
         setDate_(date_); 
         setPrix(prix); 
     }
@@ -39,10 +39,9 @@ public class Produit_fournisseur {
         this.fournisseur = fournisseur;
     }
 
-    public void setFournisseur(String fournisseur) throws Exception {
+    public void setFournisseur(String fournisseur,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Fournisseur
-       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
-         con.close();
+       Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
         setFournisseur(toSet) ;
     }
 
@@ -54,10 +53,9 @@ public class Produit_fournisseur {
         this.produit = produit;
     }
 
-    public void setProduit(String produit) throws Exception {
+    public void setProduit(String produit,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
-         con.close();
+       Produit toSet = Produit.getById(Integer.parseInt(produit),con );
         setProduit(toSet) ;
     }
 
@@ -219,6 +217,42 @@ public class Produit_fournisseur {
             if (st != null) st.close();
            if (con != null) con.close(); 
         }
+    }
+
+    public static Produit_fournisseur getCorrespondant (Fournisseur fournisseur, Produit produit , String date) throws Exception{
+        Connection con = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        Produit_fournisseur instance = null;
+
+        try {
+            con = MyConnect.getConnection();
+            String query = "SELECT DISTINCT ON (id_produit, id_fournisseur) * FROM Produit_fournisseur WHERE id_fournisseur = ? and id_produit = ? and date_ <= ? order by id_produit, id_fournisseur, date_ DESC ";
+            st = con.prepareStatement(query);
+            st.setInt(1, fournisseur.getId() );
+            st.setInt(2, produit.getId() );
+            st.setDate(3, Util.convertDateFromHtmlInput(date));
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                instance = new Produit_fournisseur();
+                instance.setId(rs.getInt("id"));
+                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
+                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
+                instance.setPrix(rs.getDouble("prix"));
+                instance.setDate_(rs.getDate("date_"));
+            }else{
+                throw new Exception("no price found for fournisseur :"+fournisseur.getNom() + " mp :" + produit.getNom() + " date:"+date );
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !true) con.close();
+        }
+
+        return instance;
     }
 }
 

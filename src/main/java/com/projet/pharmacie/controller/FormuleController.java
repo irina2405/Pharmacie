@@ -15,11 +15,15 @@ import com.projet.pharmacie.model.*;
 public class FormuleController {
 
     @GetMapping("/InitFormule")
-    public String showAll(Model model) {
+    public String showAll( @RequestParam(required = false)String search ,@RequestParam(required = false) String mp,@RequestParam(required = false) String produit,@RequestParam(required = false) String qt_mp_min,@RequestParam(required = false) String qt_mp_max ,Model model) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
-            model.addAttribute("all", Formule.getAll());
+            if (search!=null && !search.isEmpty()) {
+                model.addAttribute("all", Formule.search(mp, produit, qt_mp_min , qt_mp_max));
+            }else{
+                model.addAttribute("all", Formule.getAll());
+            }
             Matiere_premiere[] allMp = Matiere_premiere.getAll();
             model.addAttribute("allMp", allMp);
             Produit[] allProduit = Produit.getAll();
@@ -43,8 +47,8 @@ public class FormuleController {
         try {
             con = MyConnect.getConnection();
             Formule instance = new Formule();
-            instance.setMp(mp) ;
-            instance.setProduit(produit) ;
+            instance.setMp(mp,con) ;
+            instance.setProduit(produit,con) ;
             instance.setQt_mp(qt_mp) ; 
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);

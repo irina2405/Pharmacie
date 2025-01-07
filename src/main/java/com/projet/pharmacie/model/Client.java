@@ -55,10 +55,22 @@ public class Client {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
+    }
+    public static Client getById (int id) throws Exception{
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            return getById(id, con);
+        } catch (Exception e) {
+            throw e;
+        }finally{
+            try {
+                if (con!=null) con.close();
+            } catch (Exception e) {}
+        }
     }
     public static Client[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();

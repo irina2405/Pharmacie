@@ -18,6 +18,7 @@ CREATE TABLE maladie(
 
 CREATE TABLE tresorerie(
    id SERIAL,
+   motif VARCHAR(50) ,
    date_ TIMESTAMP NOT NULL,
    depot NUMERIC(15,2)  ,
    retrait NUMERIC(15,2)  ,
@@ -42,6 +43,8 @@ CREATE TABLE produit(
    id SERIAL,
    nom VARCHAR(50)  NOT NULL,
    denorm_prix_vente NUMERIC(15,2)   NOT NULL,
+   min_age INTEGER,
+   max_age INTEGER,
    id_1 INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_1) REFERENCES unite(id)
@@ -51,21 +54,10 @@ CREATE TABLE fabrication(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
    qt_produit NUMERIC(15,2)   NOT NULL,
+   cout NUMERIC(15,2)  ,
    id_1 INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_1) REFERENCES produit(id)
-);
-
-CREATE TABLE achat_mp(
-   id SERIAL,
-   date_ TIMESTAMP NOT NULL,
-   qt_mp NUMERIC(15,2)   NOT NULL,
-   denorm_prix_achat NUMERIC(15,2)   NOT NULL,
-   id_1 INTEGER NOT NULL,
-   id_2 INTEGER NOT NULL,
-   PRIMARY KEY(id),
-   FOREIGN KEY(id_1) REFERENCES Fournisseur(id),
-   FOREIGN KEY(id_2) REFERENCES matiere_premiere(id)
 );
 
 CREATE TABLE facture(
@@ -87,36 +79,45 @@ CREATE TABLE histo_prix_produit(
    FOREIGN KEY(id_1) REFERENCES produit(id)
 );
 
-CREATE TABLE achat_produit(
+CREATE TABLE Fournisseur_mp(
    id SERIAL,
-   date_ TIMESTAMP NOT NULL,
-   qt_produit NUMERIC(15,2)   NOT NULL,
-   denorm_prix_achat NUMERIC(15,2)   NOT NULL,
+   prix NUMERIC(15,2)   NOT NULL,
+   date_ DATE NOT NULL,
    id_1 INTEGER NOT NULL,
    id_2 INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_1) REFERENCES Fournisseur(id),
-   FOREIGN KEY(id_2) REFERENCES produit(id)
-);
-
-CREATE TABLE fournisseur_mp(
-   id INTEGER,
-   id_1 INTEGER,
-   prix NUMERIC(15,2)   NOT NULL,
-   date_ DATE NOT NULL,
-   PRIMARY KEY(id, id_1),
-   FOREIGN KEY(id) REFERENCES matiere_premiere(id),
-   FOREIGN KEY(id_1) REFERENCES Fournisseur(id)
+   FOREIGN KEY(id_2) REFERENCES matiere_premiere(id)
 );
 
 CREATE TABLE produit_fournisseur(
-   id INTEGER,
-   id_1 INTEGER,
-   date_ DATE NOT NULL,
+   id SERIAL,
    prix NUMERIC(15,2)   NOT NULL,
-   PRIMARY KEY(id, id_1),
-   FOREIGN KEY(id) REFERENCES Fournisseur(id),
-   FOREIGN KEY(id_1) REFERENCES produit(id)
+   date_ DATE NOT NULL,
+   id_1 INTEGER NOT NULL,
+   id_2 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES produit(id),
+   FOREIGN KEY(id_2) REFERENCES Fournisseur(id)
+);
+
+CREATE TABLE achat_mp(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   qt_mp NUMERIC(15,2)   NOT NULL,
+   reste_mp NUMERIC(15,2)  ,
+   id_1 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES Fournisseur_mp(id)
+);
+
+CREATE TABLE achat_produit(
+   id SERIAL,
+   date_ TIMESTAMP NOT NULL,
+   qt_produit NUMERIC(15,2)   NOT NULL,
+   id_1 INTEGER NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES produit_fournisseur(id)
 );
 
 CREATE TABLE Formule(

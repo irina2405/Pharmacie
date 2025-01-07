@@ -7,10 +7,13 @@ public class Matiere_premiere {
     private int id;
     private String nom;
     private Unite unite;
+    private double qt_total_mp_achat; // Quantité totale achetée
+    private double qt_total_mp_depense; // Quantité totale dépensée
+    private double quantite_restante; // Quantité restante
     public Matiere_premiere(){}
-    public Matiere_premiere(String nom,String unite) throws Exception{
+    public Matiere_premiere(String nom,String unite, Connection con) throws Exception{
         setNom(nom); 
-        setUnite(unite); 
+        setUnite(unite, con); 
     }
     public int getId() {
         return id;
@@ -44,11 +47,91 @@ public class Matiere_premiere {
         this.unite = unite;
     }
 
-    public void setUnite(String unite) throws Exception {
+    public void setUnite(String unite,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Unite
-       Connection con = MyConnect.getConnection();        Unite toSet = Unite.getById(Integer.parseInt(unite),con );
-         con.close();
+       Unite toSet = Unite.getById(Integer.parseInt(unite),con );
         setUnite(toSet) ;
+    }
+
+    public double getQt_total_mp_achat() {
+        return qt_total_mp_achat;
+    }
+
+    public void setQt_total_mp_achat(double qt_total_mp_achat) {
+        this.qt_total_mp_achat = qt_total_mp_achat;
+    }
+
+    public double getQt_total_mp_depense() {
+        return qt_total_mp_depense;
+    }
+
+    public void setQt_total_mp_depense(double qt_total_mp_depense) {
+        this.qt_total_mp_depense = qt_total_mp_depense;
+    }
+
+    public double getQuantite_restante() {
+        return quantite_restante;
+    }
+
+    public void setQuantite_restante(double quantite_restante) {
+        this.quantite_restante = quantite_restante;
+    }
+
+    public double getQtTotalMpAchat(Connection connection, java.sql.Timestamp date) throws SQLException {
+        String query = date == null ?
+            "SELECT COALESCE(SUM(a.qt_mp), 0) AS total_achat FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ?" :
+            "SELECT COALESCE(SUM(a.qt_mp), 0) AS total_achat FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ? AND a.date_ <= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            if (date != null) {
+                stmt.setTimestamp(2, date); // Utilisation de setTimestamp
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    qt_total_mp_achat = rs.getDouble("total_achat");
+                }
+            }
+        }
+        return qt_total_mp_achat;
+    }
+    public double getQtTotalMpDepense(Connection connection, java.sql.Timestamp date) throws SQLException {
+        String query = date == null ?
+            "SELECT COALESCE(SUM(a.qt_mp - a.reste_mp), 0) AS total_depense FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ?" :
+            "SELECT COALESCE(SUM(a.qt_mp - a.reste_mp), 0) AS total_depense FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ? AND a.date_ <= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            if (date != null) {
+                stmt.setTimestamp(2, date);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    qt_total_mp_depense = rs.getDouble("total_depense");
+                }
+            }
+        }
+        return qt_total_mp_depense;
+    }
+
+    public double getQuantiteRestante(Connection connection, java.sql.Timestamp date) throws SQLException {
+        String query = date == null ?
+            "SELECT COALESCE(SUM(a.reste_mp), 0) AS quantite_restante FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ?" :
+            "SELECT COALESCE(SUM(a.reste_mp), 0) AS quantite_restante FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ? AND a.date_ <= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            if (date != null) {
+                stmt.setTimestamp(2, date);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    quantite_restante = rs.getDouble("quantite_restante");
+                }
+            }
+        }
+        return quantite_restante;
+    }
+
+    public Achat_mp[] getMesAchat (Timestamp date_) throws Exception{
+        return Achat_mp.getFiltered(id , date_);
     }
 
     public static Matiere_premiere getById(int id, Connection con) throws Exception {
@@ -57,7 +140,7 @@ public class Matiere_premiere {
         Matiere_premiere instance = null;
 
         try {
-            String query = "SELECT * FROM matiere_premiere WHERE id = ?";
+            String query = "SELECT * FROM MP_with_qt WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -67,6 +150,11 @@ public class Matiere_premiere {
                 instance.setId(rs.getInt("id"));
                 instance.setNom(rs.getString("nom"));
                 instance.setUnite(Unite.getById(rs.getInt("id_unite") ,con ));
+                instance.setQt_total_mp_achat(rs.getDouble("qt_total_mp_achat"));
+                instance.setQt_total_mp_depense(rs.getDouble("qt_total_mp_depense"));
+                instance.setQuantite_restante(
+                    instance.getQt_total_mp_achat() - instance.getQt_total_mp_depense()
+                );
             }
         } catch (Exception e) {
             throw e ;
@@ -85,7 +173,7 @@ public class Matiere_premiere {
         List<Matiere_premiere> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM matiere_premiere order by id asc ";
+            String query = "SELECT * FROM MP_with_qt order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -93,7 +181,12 @@ public class Matiere_premiere {
                 Matiere_premiere item = new Matiere_premiere();
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
-                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                item.setUnite(Unite.getById(rs.getInt("id_unite"), con));
+                item.setQt_total_mp_achat(rs.getDouble("qt_total_mp_achat"));
+                item.setQt_total_mp_depense(rs.getDouble("qt_total_mp_depense"));
+                item.setQuantite_restante(
+                    item.getQt_total_mp_achat() - item.getQt_total_mp_depense()
+                );
                 items.add(item);
             }
         } catch (Exception e) {
@@ -171,6 +264,45 @@ public class Matiere_premiere {
             if (st != null) st.close();
            if (con != null) con.close(); 
         }
+    }
+
+    public Produit[] getProduitsConcernes() throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Produit> items = new ArrayList<>();
+
+        try {
+            String query = "with concerned_prod as (" + 
+                                "   select distinct(id_produit) id_produit" + 
+                                "   from Formule " + 
+                                "   where id_mp = ?" + 
+                                ")" + 
+                                "select produit.* " + 
+                                "   FROM produit " + 
+                                "   join CONCERNED_PROD" + 
+                                "   on id = ID_PRODUIT;";
+            st = con.prepareStatement(query);
+            st.setInt(1, getId());
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Produit item = new Produit();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Produit[0]);
     }
 }
 

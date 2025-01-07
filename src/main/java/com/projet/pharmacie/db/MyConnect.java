@@ -8,7 +8,7 @@ import java.sql.*;
 public class MyConnect{
 	private static String username="postgres";
 	private static String password="postgres"; // a changer
-	private static String url="jdbc:postgresql://localhost:5432/dbName";
+	private static String url="jdbc:postgresql://localhost:5432/pharmacie";
 
 	public static Connection getConnection() throws Exception {
 		Connection c=null;

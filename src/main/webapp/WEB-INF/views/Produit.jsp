@@ -14,20 +14,27 @@
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Denorm prix vente</th>
+                    <th>Min age</th>
+                    <th>Max age</th>
                     <th>Unite</th>
                     <th>Actions</th>
-                    <th> </th>
+                    <th>voir les mp concernes</th>
+                    <th>voir les maladies concernes</th>
                 </tr>
                 <% for (int i = 0; i < all.length; i++) { %>
                 <tr>
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getNom() %></td>
                     <td><%= all[i].getDenorm_prix_vente() %></td>
+                    <td><%= all[i].getMin_age() %></td>
+                    <td><%= all[i].getMax_age() %></td>
                     <td><%= all[i].getUnite() != null ? all[i].getUnite().getNom() : "" %> </td>
                     <td>
                         <a href="/TraitProduit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitProduit/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
+                    <td><a href="/mp_concernes_par_produit/<%= all[i].getId() %>">Voir</a></td>
+                    <td><a href="/maladies_concernes_par_produit/<%= all[i].getId() %>">Voir</a></td>
                 </tr>
                 <% } %>
             </table>
@@ -49,6 +56,14 @@
                 <div class="form-group">
                     <label for="denorm_prix_vente">Denorm prix vente</label>
                     <input type="number" name="denorm_prix_vente" id="denorm_prix_vente" class="form-control" value="<%= currentProduit != null ? currentProduit.getDenorm_prix_vente() : "" %>">
+                </div>
+                <div class="form-group">
+                    <label for="min_age">Min age</label>
+                    <input type="number" name="min_age" id="min_age" class="form-control" value="<%= currentProduit != null ? currentProduit.getMin_age() : "" %>">
+                </div>
+                <div class="form-group">
+                    <label for="max_age">Max age</label>
+                    <input type="number" name="max_age" id="max_age" class="form-control" value="<%= currentProduit != null ? currentProduit.getMax_age() : "" %>">
                 </div>
                 <div class="form-group">
                     <label for="unite">Unite</label>

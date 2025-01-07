@@ -95,4 +95,25 @@ public class MaladieController {
         }
     }
 
+    @GetMapping("/produits_concernes_par_maladie/{id_maladie}")
+    public String produits_concernes_par_maladie(Model model , @PathVariable("id_maladie") int id_maladie) {
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            Maladie maladie = Maladie.getById(id_maladie, con);
+            Produit[] produits_concernes_par_maladie = maladie.getProduitsConcernes ();
+            model.addAttribute("all", produits_concernes_par_maladie);
+            return "produits_concernes";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
+            return "Error";
+        } finally {
+            if (con != null) {
+                try { con.close(); } catch (Exception ignored) {}
+            }
+        }
+
+    }
+
 }

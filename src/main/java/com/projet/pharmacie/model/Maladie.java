@@ -55,7 +55,6 @@ public class Maladie {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -150,6 +149,39 @@ public class Maladie {
             if (st != null) st.close();
            if (con != null) con.close(); 
         }
+    }
+
+    public Produit[] getProduitsConcernes() throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Produit> items = new ArrayList<>();
+
+        try {
+            String query = "select produit.* from produit join maladie_produit on produit.id = maladie_produit.id_produit where id_maladie = ?;";
+            st = con.prepareStatement(query);
+            st.setInt(1, getId());
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Produit item = new Produit();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setMin_age(rs.getInt("min_age"));
+                item.setMax_age(rs.getInt("max_age"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Produit[0]);
     }
 }
 

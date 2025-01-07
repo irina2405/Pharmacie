@@ -7,16 +7,14 @@ public class Achat_mp {
     private int id;
     private java.sql.Timestamp date_;
     private double qt_mp;
-    private double denorm_prix_achat;
-    private Fournisseur fournisseur;
-    private Matiere_premiere mp;
+    private double reste_mp;
+    private Fournisseur_mp fournisseur_mp;
     public Achat_mp(){}
-    public Achat_mp(String date_,String qt_mp,String denorm_prix_achat,String fournisseur,String mp) throws Exception{
+    public Achat_mp(String date_,String qt_mp,String reste_mp,String fournisseur_mp, Connection con) throws Exception{
         setDate_(date_); 
         setQt_mp(qt_mp); 
-        setDenorm_prix_achat(denorm_prix_achat); 
-        setFournisseur(fournisseur); 
-        setMp(mp); 
+        setReste_mp(reste_mp); 
+        setFournisseur_mp(fournisseur_mp, con); 
     }
     public int getId() {
         return id;
@@ -63,49 +61,76 @@ public class Achat_mp {
         setQt_mp(toSet) ;
     }
 
-    public double getDenorm_prix_achat() {
-        return denorm_prix_achat;
+    public double getReste_mp() {
+        return reste_mp;
     }
 
-    public void setDenorm_prix_achat(double denorm_prix_achat) throws Exception {
-        Util.verifyNumericPostive(denorm_prix_achat, "denorm_prix_achat");
-        this.denorm_prix_achat = denorm_prix_achat;
+    public void setReste_mp(double reste_mp) throws Exception {
+        Util.verifyNumericPostive(reste_mp, "reste_mp");
+        this.reste_mp = reste_mp;
     }
 
-    public void setDenorm_prix_achat(String denorm_prix_achat) throws Exception {
-        double toSet =  Util.convertDoubleFromHtmlInput(denorm_prix_achat);
+    public void setReste_mp(String reste_mp) throws Exception {
+        double toSet =  Util.convertDoubleFromHtmlInput(reste_mp);
 
-        setDenorm_prix_achat(toSet) ;
+        setReste_mp(toSet) ;
     }
 
-    public Fournisseur getFournisseur() {
-        return fournisseur;
+    public Fournisseur_mp getFournisseur_mp() {
+        return fournisseur_mp;
     }
 
-    public void setFournisseur(Fournisseur fournisseur) throws Exception {
-        this.fournisseur = fournisseur;
+    public void setFournisseur_mp(Fournisseur_mp fournisseur_mp) throws Exception {
+        this.fournisseur_mp = fournisseur_mp;
     }
 
-    public void setFournisseur(String fournisseur) throws Exception {
-         //define how this type should be conterted from String ... type : Fournisseur
-       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
-         con.close();
-        setFournisseur(toSet) ;
+    public void setFournisseur_mp(String fournisseur_mp,Connection con) throws Exception {
+         //define how this type should be conterted from String ... type : Fournisseur_mp
+        Fournisseur_mp toSet = Fournisseur_mp.getById(Integer.parseInt(fournisseur_mp),con );
+        setFournisseur_mp(toSet) ;
     }
 
-    public Matiere_premiere getMp() {
-        return mp;
-    }
-
-    public void setMp(Matiere_premiere mp) throws Exception {
-        this.mp = mp;
-    }
-
-    public void setMp(String mp) throws Exception {
-         //define how this type should be conterted from String ... type : Matiere_premiere
-       Connection con = MyConnect.getConnection();        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
-         con.close();
-        setMp(toSet) ;
+    public static Achat_mp[] getFiltered(int idMp, java.sql.Timestamp dateLimit) throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Achat_mp> items = new ArrayList<>();
+    
+        try {
+            String query = """
+                SELECT achat_mp.* 
+                FROM achat_mp 
+                JOIN fournisseur_mp ON achat_mp.id_fournisseur_mp = fournisseur_mp.id 
+                WHERE fournisseur_mp.id_mp = ? 
+                  AND achat_mp.date_ <= ? 
+                  AND achat_mp.reste_mp > 0
+                order by achat_mp.date_ asc
+                """;
+    
+            st = con.prepareStatement(query);
+            st.setInt(1, idMp);
+            st.setTimestamp(2, dateLimit);
+    
+            rs = st.executeQuery();
+    
+            while (rs.next()) {
+                Achat_mp item = new Achat_mp();
+                item.setId(rs.getInt("id"));
+                item.setDate_(rs.getTimestamp("date_"));
+                item.setQt_mp(rs.getDouble("qt_mp"));
+                item.setReste_mp(rs.getDouble("reste_mp"));
+                item.setFournisseur_mp(Fournisseur_mp.getById(rs.getInt("id_fournisseur_mp"), con));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !con.isClosed()) con.close();
+        }
+    
+        return items.toArray(new Achat_mp[0]);
     }
 
     public static Achat_mp getById(int id, Connection con) throws Exception {
@@ -124,9 +149,8 @@ public class Achat_mp {
                 instance.setId(rs.getInt("id"));
                 instance.setDate_(rs.getTimestamp("date_"));
                 instance.setQt_mp(rs.getDouble("qt_mp"));
-                instance.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
-                instance.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur") ,con ));
-                instance.setMp(Matiere_premiere.getById(rs.getInt("id_mp") ,con ));
+                instance.setReste_mp(rs.getDouble("reste_mp"));
+                instance.setFournisseur_mp(Fournisseur_mp.getById(rs.getInt("id_fournisseur_mp") ,con ));
             }
         } catch (Exception e) {
             throw e ;
@@ -154,9 +178,8 @@ public class Achat_mp {
                 item.setId(rs.getInt("id"));
                 item.setDate_(rs.getTimestamp("date_"));
                 item.setQt_mp(rs.getDouble("qt_mp"));
-                item.setDenorm_prix_achat(rs.getDouble("denorm_prix_achat"));
-                item.setFournisseur(Fournisseur.getById(rs.getInt("id_fournisseur")  ,con ));
-                item.setMp(Matiere_premiere.getById(rs.getInt("id_mp")  ,con ));
+                item.setReste_mp(rs.getDouble("reste_mp"));
+                item.setFournisseur_mp(Fournisseur_mp.getById(rs.getInt("id_fournisseur_mp")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -169,26 +192,24 @@ public class Achat_mp {
 
         return items.toArray(new Achat_mp[0]);
     }
-    public int insert(Connection con) throws Exception {
+    public int insertUncommitted(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO achat_mp (date_, qt_mp, denorm_prix_achat, id_fournisseur, id_mp) VALUES (?, ?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO achat_mp (date_, qt_mp, id_fournisseur_mp) VALUES (?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setTimestamp(1, this.date_);
             st.setDouble(2, this.qt_mp);
-            st.setDouble(3, this.denorm_prix_achat);
-            st.setInt(4, this.fournisseur.getId());
-            st.setInt(5, this.mp.getId());
+            st.setInt(3, this.fournisseur_mp.getId());
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 
-                    con.commit();
+                    // con.commit();
                     return generatedId;
                 } else {
-                    con.rollback();
+                    // con.rollback();
                     throw new Exception("Failed to retrieve generated ID");
                 }
             } catch (Exception e) {
@@ -200,22 +221,21 @@ public class Achat_mp {
             if (st != null) st.close();
         }
     }
-    public void update(Connection con) throws Exception {
+    public void updateUncommitted(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE achat_mp SET date_ = ?, qt_mp = ?, denorm_prix_achat = ?, id_fournisseur = ?, id_mp = ? WHERE id = ?";
+            String query = "UPDATE achat_mp SET date_ = ?, qt_mp = ?, reste_mp = ?, id_fournisseur_mp = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setTimestamp(1, this.date_);
             st.setDouble(2, this.qt_mp);
-            st.setDouble(3, this.denorm_prix_achat);
-            st.setInt (4, this.fournisseur.getId());
-            st.setInt (5, this.mp.getId());
-            st.setInt(6, this.getId());
+            st.setDouble(3, this.reste_mp);
+            st.setInt (4, this.fournisseur_mp.getId());
+            st.setInt(5, this.getId());
             try {
                 st.executeUpdate();
-                con.commit();
+                // con.commit();
             } catch (Exception e) {
-                con.rollback();
+                // con.rollback();
                 throw new Exception("Failed to update record", e);
             }
         } finally {

@@ -8,12 +8,14 @@
     %>
     <div class="row">
         <div class="col-md-7 tableContainer ">
+            <a href="/InitMaladie_produit">Liaison Maladie et Produit</a>
             <table class="table table-striped" id="table">
                 <tr>
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Actions</th>
-                    <th> </th>
+                    <th>Voir Produit concernes</th>
+                    <th>Recherche</th>
                 </tr>
                 <% for (int i = 0; i < all.length; i++) { %>
                 <tr>
@@ -23,6 +25,20 @@
                         <a href="/TraitMaladie/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitMaladie/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
+                    <td><a href="/produits_concernes_par_maladie/<%= all[i].getId() %>">Voir</a></td>
+                    <td>
+                        <form action="/InitProduit" method="get" class="form-inline">
+                            <div class="form-group">
+                                <input type="number" name="min_age" class="form-control" placeholder="Min Age">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" name="max_age" class="form-control" placeholder="Max Age">
+                            </div>
+                            <input type="hidden" name="id" value="<%= all[i].getId() %>">
+                            <button type="submit" class="btn btn-primary">Recherche</button>
+                        </form>
+                    </td>
+                    
                 </tr>
                 <% } %>
             </table>

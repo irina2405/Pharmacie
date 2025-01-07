@@ -5,8 +5,7 @@
     <%
         Achat_mp[] all = (Achat_mp[]) request.getAttribute("all");
         Achat_mp currentAchat_mp = (Achat_mp) request.getAttribute("currentAchat_mp");
-        Fournisseur[] allFournisseur = (Fournisseur[]) request.getAttribute("allFournisseur");
-        Matiere_premiere[] allMp = (Matiere_premiere[]) request.getAttribute("allMp");
+        Fournisseur_mp[] allFournisseur_mp = (Fournisseur_mp[]) request.getAttribute("allFournisseur_mp");
     %>
     <div class="row">
         <div class="col-md-7 tableContainer ">
@@ -15,9 +14,8 @@
                     <th>Id</th>
                     <th>Date </th>
                     <th>Qt mp</th>
-                    <th>Denorm prix achat</th>
-                    <th>Fournisseur</th>
-                    <th>Matiere premiere</th>
+                    <th>Reste mp</th>   
+                    <th>Fournisseur mp</th>
                     <th>Actions</th>
                     <th> </th>
                 </tr>
@@ -26,12 +24,11 @@
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getDate_() %></td>
                     <td><%= all[i].getQt_mp() %></td>
-                    <td><%= all[i].getDenorm_prix_achat() %></td>
-                    <td><%= all[i].getFournisseur() != null ? all[i].getFournisseur().getNom() : "" %> </td>
-                    <td><%= all[i].getMp() != null ? all[i].getMp().getNom() : "" %> </td>
+                    <td><%= all[i].getReste_mp() %></td>
+                    <td><%= all[i].getFournisseur_mp() != null ? all[i].getFournisseur_mp().getId() + " -- " + all[i].getFournisseur_mp().getFournisseur().getNom() + " -- " + all[i].getFournisseur_mp().getMp().getNom() + " -- " + all[i].getFournisseur_mp().getPrix() : "" %> </td>
                     <td>
-                        <a href="/TraitAchat_mp/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                        <a href="/InitAchat_mp/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                        <%-- <a href="/TraitAchat_mp/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> --%>
+                        <%-- <a href="/InitAchat_mp/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a> --%>
                     </td>
                 </tr>
                 <% } %>
@@ -56,24 +53,11 @@
                     <input type="number" name="qt_mp" id="qt_mp" class="form-control" value="<%= currentAchat_mp != null ? currentAchat_mp.getQt_mp() : "" %>">
                 </div>
                 <div class="form-group">
-                    <label for="denorm_prix_achat">Denorm prix achat</label>
-                    <input type="number" name="denorm_prix_achat" id="denorm_prix_achat" class="form-control" value="<%= currentAchat_mp != null ? currentAchat_mp.getDenorm_prix_achat() : "" %>">
-                </div>
-                <div class="form-group">
-                    <label for="fournisseur">Fournisseur</label>
-                    <select name="fournisseur" id="fournisseur" class="form-control">
+                    <label for="fournisseur_mp">Fournisseur mp</label>
+                    <select name="fournisseur_mp" id="fournisseur_mp" class="form-control">
                         <option value="">-- choose --</option>
-                        <% for (int j = 0; j < allFournisseur.length; j++) { %>
-                        <option value="<%= allFournisseur[j].getId() %>" <%= currentAchat_mp != null && currentAchat_mp.getFournisseur() != null && currentAchat_mp.getFournisseur().getId() == allFournisseur[j].getId() ? "selected" : "" %>><%= allFournisseur[j].getNom() %>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="mp">Matiere premiere</label>
-                    <select name="mp" id="mp" class="form-control">
-                        <option value="">-- choose --</option>
-                        <% for (int j = 0; j < allMp.length; j++) { %>
-                        <option value="<%= allMp[j].getId() %>" <%= currentAchat_mp != null && currentAchat_mp.getMp() != null && currentAchat_mp.getMp().getId() == allMp[j].getId() ? "selected" : "" %>><%= allMp[j].getNom() %>
+                        <% for (int j = 0; j < allFournisseur_mp.length; j++) { %>
+                        <option value="<%= allFournisseur_mp[j].getId() %>" <%= currentAchat_mp != null && currentAchat_mp.getFournisseur_mp() != null && currentAchat_mp.getFournisseur_mp().getId() == allFournisseur_mp[j].getId() ? "selected" : "" %>><%= allFournisseur_mp[j].getId() + " -- " + allFournisseur_mp[j].getFournisseur().getNom() + " -- " + allFournisseur_mp[j].getMp().getNom()   %>
                         <% } %>
                     </select>
                 </div>

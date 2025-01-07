@@ -34,11 +34,12 @@ public class TresorerieController {
     }
 
     @PostMapping("/InitTresorerie")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String date_, @RequestParam String depot, @RequestParam String retrait, @RequestParam(required = false) String mode) {
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String motif, @RequestParam String date_, @RequestParam String depot, @RequestParam String retrait, @RequestParam(required = false) String mode) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
             Tresorerie instance = new Tresorerie();
+            instance.setMotif(motif) ; 
             instance.setDate_(date_) ; 
             instance.setDepot(depot) ; 
             instance.setRetrait(retrait) ; 

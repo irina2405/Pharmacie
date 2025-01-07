@@ -1,0 +1,83 @@
+.sidebar {
+    background-color: #232221;
+    color: white;
+    height: 100vh;
+    max-height: 200vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: fixed;
+    margin-top: -20px;
+}
+
+/* Barre de défilement */
+.sidebar::-webkit-scrollbar {
+    width: 12px;         /* Largeur de la barre de défilement */
+    height: 12px;        /* Hauteur de la barre de défilement horizontale */
+}
+
+/* Partie de la barre de défilement (piste) */
+.sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;  /* Couleur de la piste */
+    border-radius: 10px;   /* Coins arrondis */
+}
+
+/* Partie qui glisse (le "thumb") */
+.sidebar::-webkit-scrollbar-thumb {
+    background: #888;      /* Couleur de la barre de défilement */
+    border-radius: 10px;   /* Coins arrondis */
+    transition: background 0.3s ease;
+}
+
+/* Lorsque le curseur est au-dessus de la barre de défilement */
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;      /* Couleur au survol */
+}
+
+/* Barre de défilement horizontale (si nécessaire) */
+.sidebar::-webkit-scrollbar-horizontal {
+    height: 12px;
+}
+
+.sidebar::-webkit-scrollbar-thumb-horizontal {
+    background: #252525;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-track-horizontal {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.sidebar span {
+    margin-right: 15px;
+}
+.sidebar ul {
+list-style-type: none;
+padding: 0;
+}
+.dropdown-menu {
+    background-color: #5c5656;
+}
+.sidebar ul li {
+padding: 8px 0;
+}
+
+.sidebar ul li a {
+color: white;
+text-decoration: none;
+display: block;
+height: 30px;
+width: 600vw !important;
+padding: 8px 16px;
+}
+
+.sidebar ul li a:hover {
+background-color: white;
+color: #875f52;
+/* border-radius: 25px; */
+}
+.active{
+background-color: white;
+color: #875f52 !important;
+border-radius: 15px;
+}

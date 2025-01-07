@@ -43,8 +43,8 @@ public class Produit_fournisseurController {
         try {
             con = MyConnect.getConnection();
             Produit_fournisseur instance = new Produit_fournisseur();
-            instance.setFournisseur(fournisseur) ;
-            instance.setProduit(produit) ;
+            instance.setFournisseur(fournisseur,con) ;
+            instance.setProduit(produit,con) ;
             instance.setDate_(date_) ; 
             instance.setPrix(prix) ; 
             if (mode != null && "u".equals(mode)) {

@@ -44,12 +44,12 @@ public class FactureController {
             instance.setDate_(date_) ; 
             instance.setTotal(total) ; 
             instance.setTotal_paye(total_paye) ; 
-            instance.setClient(client) ;
+            instance.setClient(client, con) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
-                instance.update(con);
+                instance.updateUncommitted(con);
             } else {
-                instance.insert(con);
+                instance.insertUncommitted(con);
             }
             return "redirect:/InitFacture";
         } catch (Exception e) {

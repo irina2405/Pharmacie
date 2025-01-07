@@ -20,10 +20,8 @@ public class Achat_produitController {
         try {
             con = MyConnect.getConnection();
             model.addAttribute("all", Achat_produit.getAll());
-            Fournisseur[] allFournisseur = Fournisseur.getAll();
-            model.addAttribute("allFournisseur", allFournisseur);
-            Produit[] allProduit = Produit.getAll();
-            model.addAttribute("allProduit", allProduit);
+            Produit_fournisseur[] allProduit_fournisseur = Produit_fournisseur.getAll();
+            model.addAttribute("allProduit_fournisseur", allProduit_fournisseur);
             return "Achat_produit";
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,24 +36,33 @@ public class Achat_produitController {
     }
 
     @PostMapping("/InitAchat_produit")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String date_, @RequestParam String qt_produit, @RequestParam String denorm_prix_achat, @RequestParam String fournisseur, @RequestParam String produit, @RequestParam(required = false) String mode) {
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String date_, @RequestParam String qt_produit, @RequestParam String produit_fournisseur, @RequestParam(required = false) String mode) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
             Achat_produit instance = new Achat_produit();
             instance.setDate_(date_) ; 
             instance.setQt_produit(qt_produit) ; 
-            instance.setDenorm_prix_achat(denorm_prix_achat) ; 
-            instance.setFournisseur(fournisseur) ;
-            instance.setProduit(produit) ;
+            Produit_fournisseur produit_fournisseur_ = Produit_fournisseur.getById(Integer.parseInt(produit_fournisseur), con);
+            Produit_fournisseur correspondant = Produit_fournisseur.getCorrespondant (produit_fournisseur_.getFournisseur(),produit_fournisseur_.getProduit(), date_  ); 
+            instance.setProduit_fournisseur(correspondant) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);
             } else {
                 instance.insert(con);
+                Double retrait = correspondant.getPrix()*Double.parseDouble(qt_produit);
+                Tresorerie tresorerie = new Tresorerie("achat produit",date_, "0", retrait.toString());
+                tresorerie.retirer(con);
             }
+            con.commit();
             return "redirect:/InitAchat_produit";
         } catch (Exception e) {
+            try {
+                con.rollback();
+            } catch (Exception ignored) {
+                System.out.println("ignored ... ");
+            }
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
             return "Error";
@@ -91,10 +98,8 @@ public class Achat_produitController {
             Achat_produit currentAchat_produit = Achat_produit.getById(id ,con);
             model.addAttribute("currentAchat_produit", currentAchat_produit);
             model.addAttribute("all", Achat_produit.getAll());
-            Fournisseur[] allFournisseur = Fournisseur.getAll();
-            model.addAttribute("allFournisseur", allFournisseur);
-            Produit[] allProduit = Produit.getAll();
-            model.addAttribute("allProduit", allProduit);
+            Produit_fournisseur[] allProduit_fournisseur = Produit_fournisseur.getAll();
+            model.addAttribute("allProduit_fournisseur", allProduit_fournisseur);
             return "Achat_produit";
         } catch (Exception e) {
             e.printStackTrace();

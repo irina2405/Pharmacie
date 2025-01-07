@@ -1,8 +1,13 @@
 package com.projet.pharmacie.model;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.projet.pharmacie.db.MyConnect;
-import com.projet.pharmacie.util.*;
+import com.projet.pharmacie.util.Util;
 public class Facture {
     private int id;
     private java.sql.Timestamp date_;
@@ -10,11 +15,11 @@ public class Facture {
     private double total_paye;
     private Client client;
     public Facture(){}
-    public Facture(String date_,String total,String total_paye,String client) throws Exception{
+    public Facture(String date_,String total,String total_paye,String client,Connection con) throws Exception{
         setDate_(date_); 
         setTotal(total); 
         setTotal_paye(total_paye); 
-        setClient(client); 
+        setClient(client, con); 
     }
     public int getId() {
         return id;
@@ -67,6 +72,9 @@ public class Facture {
 
     public void setTotal_paye(double total_paye) throws Exception {
         Util.verifyNumericPostive(total_paye, "total_paye");
+        if (total>=0 && total_paye> total) {
+            throw new Exception("total paye en exces .");
+        }
         this.total_paye = total_paye;
     }
 
@@ -84,11 +92,12 @@ public class Facture {
         this.client = client;
     }
 
-    public void setClient(String client) throws Exception {
+    public void setClient(String client, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Client
-       Connection con = MyConnect.getConnection();        Client toSet = Client.getById(Integer.parseInt(client),con );
-         con.close();
-        setClient(toSet) ;
+         if (client!=null && !client.isEmpty()) {
+              Client toSet = Client.getById(Integer.parseInt(client),con );
+              setClient(toSet) ;
+         }
     }
 
     public static Facture getById(int id, Connection con) throws Exception {
@@ -101,7 +110,7 @@ public class Facture {
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
-
+            
             if (rs.next()) {
                 instance = new Facture();
                 instance.setId(rs.getInt("id"));
@@ -115,7 +124,6 @@ public class Facture {
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !true) con.close();
         }
 
         return instance;
@@ -150,7 +158,7 @@ public class Facture {
 
         return items.toArray(new Facture[0]);
     }
-    public int insert(Connection con) throws Exception {
+    public int insertUncommitted(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
@@ -159,16 +167,20 @@ public class Facture {
             st.setTimestamp(1, this.date_);
             st.setDouble(2, this.total);
             st.setDouble(3, this.total_paye);
-            st.setInt(4, this.client.getId());
+            if (client != null) {
+                st.setInt(4, this.client.getId());
+            } else {
+                st.setNull(4, java.sql.Types.INTEGER); // Insérer une valeur NULL dans la colonne id_client
+            }
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 
-                    con.commit();
+                    // con.commit();
                     return generatedId;
                 } else {
-                    con.rollback();
+                    // con.rollback();
                     throw new Exception("Failed to retrieve generated ID");
                 }
             } catch (Exception e) {
@@ -180,7 +192,7 @@ public class Facture {
             if (st != null) st.close();
         }
     }
-    public void update(Connection con) throws Exception {
+    public void updateUncommitted(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
             String query = "UPDATE facture SET date_ = ?, total = ?, total_paye = ?, id_client = ? WHERE id = ?";
@@ -192,9 +204,9 @@ public class Facture {
             st.setInt(5, this.getId());
             try {
                 st.executeUpdate();
-                con.commit();
+                // con.commit();
             } catch (Exception e) {
-                con.rollback();
+                // con.rollback();
                 throw new Exception("Failed to update record", e);
             }
         } finally {
@@ -209,6 +221,10 @@ public class Facture {
             st = con.prepareStatement(query);
             st.setInt(1, id);
             try {
+                Facture me = Facture.getById(id, con);
+                Double retrait_rendu = me.getTotal_paye();
+                Tresorerie tresorerie = new Tresorerie("annulation vente produit " , (new Timestamp(System.currentTimeMillis())).toString(),"0", retrait_rendu.toString() );
+                tresorerie.insertUncommitted(con);
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
@@ -218,6 +234,26 @@ public class Facture {
         } finally {
             if (st != null) st.close();
            if (con != null) con.close(); 
+        }
+    }
+    public void payertotalement () throws Exception{
+        Connection con = null;
+        try {
+            con = MyConnect.getConnection();
+            Double depot_reste = total - total_paye;
+            setTotal_paye(getTotal());
+            Tresorerie tresorerie = new Tresorerie("payement en totalite " + this.getClient().getNom(), (new Timestamp(System.currentTimeMillis())).toString(), depot_reste.toString() , "0");
+            tresorerie.insertUncommitted(con);
+            updateUncommitted(con);
+            con.commit();
+        } catch (Exception e) {
+            con.rollback();
+            throw e;
+        }finally{
+            try {
+                if(con!= null) con.close();
+            } catch (Exception e) {
+            }
         }
     }
 }

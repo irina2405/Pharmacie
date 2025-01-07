@@ -5,8 +5,7 @@
     <%
         Achat_produit[] all = (Achat_produit[]) request.getAttribute("all");
         Achat_produit currentAchat_produit = (Achat_produit) request.getAttribute("currentAchat_produit");
-        Fournisseur[] allFournisseur = (Fournisseur[]) request.getAttribute("allFournisseur");
-        Produit[] allProduit = (Produit[]) request.getAttribute("allProduit");
+        Produit_fournisseur[] allProduit_fournisseur = (Produit_fournisseur[]) request.getAttribute("allProduit_fournisseur");
     %>
     <div class="row">
         <div class="col-md-7 tableContainer ">
@@ -15,9 +14,7 @@
                     <th>Id</th>
                     <th>Date </th>
                     <th>Qt produit</th>
-                    <th>Denorm prix achat</th>
-                    <th>Fournisseur</th>
-                    <th>Produit</th>
+                    <th>Produit fournisseur</th>
                     <th>Actions</th>
                     <th> </th>
                 </tr>
@@ -26,11 +23,9 @@
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getDate_() %></td>
                     <td><%= all[i].getQt_produit() %></td>
-                    <td><%= all[i].getDenorm_prix_achat() %></td>
-                    <td><%= all[i].getFournisseur() != null ? all[i].getFournisseur().getNom() : "" %> </td>
-                    <td><%= all[i].getProduit() != null ? all[i].getProduit().getNom() : "" %> </td>
+                    <td><%= all[i].getProduit_fournisseur() != null ? all[i].getProduit_fournisseur().getId() + " -- " + all[i].getProduit_fournisseur().getFournisseur().getNom() + " -- " + all[i].getProduit_fournisseur().getProduit().getNom() + " -- " + all[i].getProduit_fournisseur().getPrix() : "" %> </td>
                     <td>
-                        <a href="/TraitAchat_produit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                        <%-- <a href="/TraitAchat_produit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> --%>
                         <a href="/InitAchat_produit/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
                 </tr>
@@ -56,24 +51,11 @@
                     <input type="number" name="qt_produit" id="qt_produit" class="form-control" value="<%= currentAchat_produit != null ? currentAchat_produit.getQt_produit() : "" %>">
                 </div>
                 <div class="form-group">
-                    <label for="denorm_prix_achat">Denorm prix achat</label>
-                    <input type="number" name="denorm_prix_achat" id="denorm_prix_achat" class="form-control" value="<%= currentAchat_produit != null ? currentAchat_produit.getDenorm_prix_achat() : "" %>">
-                </div>
-                <div class="form-group">
-                    <label for="fournisseur">Fournisseur</label>
-                    <select name="fournisseur" id="fournisseur" class="form-control">
+                    <label for="produit_fournisseur">Fournisseur produit</label>
+                    <select name="produit_fournisseur" id="produit_fournisseur" class="form-control">
                         <option value="">-- choose --</option>
-                        <% for (int j = 0; j < allFournisseur.length; j++) { %>
-                        <option value="<%= allFournisseur[j].getId() %>" <%= currentAchat_produit != null && currentAchat_produit.getFournisseur() != null && currentAchat_produit.getFournisseur().getId() == allFournisseur[j].getId() ? "selected" : "" %>><%= allFournisseur[j].getNom() %>
-                        <% } %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="produit">Produit</label>
-                    <select name="produit" id="produit" class="form-control">
-                        <option value="">-- choose --</option>
-                        <% for (int j = 0; j < allProduit.length; j++) { %>
-                        <option value="<%= allProduit[j].getId() %>" <%= currentAchat_produit != null && currentAchat_produit.getProduit() != null && currentAchat_produit.getProduit().getId() == allProduit[j].getId() ? "selected" : "" %>><%= allProduit[j].getNom() %>
+                        <% for (int j = 0; j < allProduit_fournisseur.length; j++) { %>
+                        <option value="<%= allProduit_fournisseur[j].getId() %>" <%= currentAchat_produit != null && currentAchat_produit.getProduit_fournisseur() != null && currentAchat_produit.getProduit_fournisseur().getId() == allProduit_fournisseur[j].getId() ? "selected" : "" %>><%= allProduit_fournisseur[j].getId() + " -- " + allProduit_fournisseur[j].getFournisseur().getNom() + " -- " + allProduit_fournisseur[j].getProduit().getNom() + " - " + " -- " + allProduit_fournisseur[j].getPrix()  %>
                         <% } %>
                     </select>
                 </div>
