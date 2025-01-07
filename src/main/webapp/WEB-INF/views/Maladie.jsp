@@ -45,8 +45,8 @@
             <center><nav><ul class="pagination pagination-lg"></ul></nav></center>
             <script src="/assets/myjs/pagination.js"></script>
         </div>
-        <!-- <div class="col-md-1">
-        </div> -->
+        <div class="col-md-1">
+        </div>
         <div class="col-md-4">
             <form action="/InitMaladie" method="post">
                 <input type="hidden" name="id" value="<%= currentMaladie != null ? currentMaladie.getId() : 0 %>">
