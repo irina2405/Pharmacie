@@ -10,12 +10,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commin'IT app</title>
-    <link rel="icon" href="/assets/img/commuintlogo.png" type="image/png">
+    <!-- <link rel="icon" href="/assets/img/commuintlogo.png" type="image/png"> -->
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/assets/js/bootstrap.min.js"></script>
 </head>
 <body>
+<style>
+    /* body{
+        margin: 0;
+        height: 100vh;
+        background-image: url("/myimg/back.jpg");
+        background-position: center;
+        background-repeat: no-repeat;
+    } */
+</style>
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
@@ -33,7 +42,7 @@
                 <li><a href="#"></a></li>
             </ul>
             <div class="navbar-right">
-                <a class="btn btn-primary navbar-btn" href="#">Connexion</a>
+                <a class="btn btn-primary navbar-btn" href="#">DashBoard</a>
             </div>
         </div>
     </div>

@@ -80,7 +80,7 @@ public class ProduitPanierController {
             // Exemple d'insertion dans une facture
             Facture facture = new Facture();
             facture.setDate_(new Timestamp(System.currentTimeMillis()));
-            facture.setClient(id_client);
+            facture.setClient(id_client,con);
             facture.setTotal(Produit.getTotal(panier));
             if (id_client==null || id_client.isEmpty()) {
                 facture.setTotal_paye(facture.getTotal());

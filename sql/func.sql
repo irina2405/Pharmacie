@@ -45,4 +45,13 @@ create or REPLACE VIEW Produit_with_qt AS
 
 ----------------- facture impaye
 create or replace VIEW v_facture_impaye AS
-select * from facture where total_paye != total;
+    select * 
+        from facture 
+        where total_paye != total;
+
+------------------ stat vente 
+create or replace VIEW v_stat_vente as
+    SELECT EXTRACT(YEAR from date_) annee ,EXTRACT(MONTH from date_) mois  , sum(total_paye) CA
+    from facture 
+    group by EXTRACT(YEAR from date_),EXTRACT(MONTH from date_)
+    order by annee , mois;

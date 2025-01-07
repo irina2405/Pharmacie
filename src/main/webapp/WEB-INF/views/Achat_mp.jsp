@@ -57,7 +57,7 @@
                     <select name="fournisseur_mp" id="fournisseur_mp" class="form-control">
                         <option value="">-- choose --</option>
                         <% for (int j = 0; j < allFournisseur_mp.length; j++) { %>
-                        <option value="<%= allFournisseur_mp[j].getId() %>" <%= currentAchat_mp != null && currentAchat_mp.getFournisseur_mp() != null && currentAchat_mp.getFournisseur_mp().getId() == allFournisseur_mp[j].getId() ? "selected" : "" %>><%= allFournisseur_mp[j].getId() + " -- " + allFournisseur_mp[j].getFournisseur().getNom() + " -- " + allFournisseur_mp[j].getMp().getNom() + " - " + " -- " + allFournisseur_mp[j].getPrix()  %>
+                        <option value="<%= allFournisseur_mp[j].getId() %>" <%= currentAchat_mp != null && currentAchat_mp.getFournisseur_mp() != null && currentAchat_mp.getFournisseur_mp().getId() == allFournisseur_mp[j].getId() ? "selected" : "" %>><%= allFournisseur_mp[j].getId() + " -- " + allFournisseur_mp[j].getFournisseur().getNom() + " -- " + allFournisseur_mp[j].getMp().getNom()   %>
                         <% } %>
                     </select>
                 </div>

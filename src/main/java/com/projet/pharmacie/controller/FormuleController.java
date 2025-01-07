@@ -47,8 +47,8 @@ public class FormuleController {
         try {
             con = MyConnect.getConnection();
             Formule instance = new Formule();
-            instance.setMp(mp) ;
-            instance.setProduit(produit) ;
+            instance.setMp(mp,con) ;
+            instance.setProduit(produit,con) ;
             instance.setQt_mp(qt_mp) ; 
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);

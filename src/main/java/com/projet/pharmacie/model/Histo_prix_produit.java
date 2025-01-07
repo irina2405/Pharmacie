@@ -9,10 +9,10 @@ public class Histo_prix_produit {
     private double prix_vente_produit;
     private Produit produit;
     public Histo_prix_produit(){}
-    public Histo_prix_produit(String date_,String prix_vente_produit,String produit) throws Exception{
+    public Histo_prix_produit(String date_,String prix_vente_produit,String produit, Connection con) throws Exception{
         setDate_(date_); 
         setPrix_vente_produit(prix_vente_produit); 
-        setProduit(produit); 
+        setProduit(produit, con); 
     }
     public int getId() {
         return id;
@@ -67,10 +67,9 @@ public class Histo_prix_produit {
         this.produit = produit;
     }
 
-    public void setProduit(String produit) throws Exception {
+    public void setProduit(String produit, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
-         con.close();
+       Produit toSet = Produit.getById(Integer.parseInt(produit),con );
         setProduit(toSet) ;
     }
 

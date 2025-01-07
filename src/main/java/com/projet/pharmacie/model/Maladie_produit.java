@@ -8,9 +8,9 @@ public class Maladie_produit {
     private Produit produit;
     private Maladie maladie;
     public Maladie_produit(){}
-    public Maladie_produit(String produit,String maladie) throws Exception{
-        setProduit(produit); 
-        setMaladie(maladie); 
+    public Maladie_produit(String produit,String maladie,Connection con) throws Exception{
+        setProduit(produit,con); 
+        setMaladie(maladie,con); 
     }
     public int getId() {
         return id;
@@ -35,10 +35,9 @@ public class Maladie_produit {
         this.produit = produit;
     }
 
-    public void setProduit(String produit) throws Exception {
+    public void setProduit(String produit, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
-         con.close();
+       Produit toSet = Produit.getById(Integer.parseInt(produit),con );
         setProduit(toSet) ;
     }
 
@@ -50,10 +49,9 @@ public class Maladie_produit {
         this.maladie = maladie;
     }
 
-    public void setMaladie(String maladie) throws Exception {
+    public void setMaladie(String maladie, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Maladie
-       Connection con = MyConnect.getConnection();        Maladie toSet = Maladie.getById(Integer.parseInt(maladie),con );
-         con.close();
+       Maladie toSet = Maladie.getById(Integer.parseInt(maladie),con );
         setMaladie(toSet) ;
     }
 

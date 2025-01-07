@@ -10,11 +10,11 @@ public class Fabrication {
     private double cout;
     private Produit produit;
     public Fabrication(){}
-    public Fabrication(String date_,String qt_produit,String cout,String produit) throws Exception{
+    public Fabrication(String date_,String qt_produit,String cout,String produit,Connection con) throws Exception{
         setDate_(date_); 
         setQt_produit(qt_produit); 
         setCout(cout); 
-        setProduit(produit); 
+        setProduit(produit, con); 
     }
     public int getId() {
         return id;
@@ -84,10 +84,9 @@ public class Fabrication {
         this.produit = produit;
     }
 
-    public void setProduit(String produit) throws Exception {
+    public void setProduit(String produit,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
-         con.close();
+       Produit toSet = Produit.getById(Integer.parseInt(produit),con );
         setProduit(toSet) ;
     }
 
@@ -158,16 +157,43 @@ public class Fabrication {
             st = con.prepareStatement(query);
             st.setTimestamp(1, this.date_);
             st.setDouble(2, this.qt_produit);
-            st.setDouble(3, this.cout);
             st.setInt(4, this.produit.getId());
             try {
-                rs = st.executeQuery();
                 Formule[] forFabric = this.produit.getFormule();
+                double cout_fabrication = 0.0;
                 for (int i = 0; i < forFabric.length; i++) {
-                    if (forFabric[i].getQt_mp()*this.qt_produit > forFabric[i].getMp().getQuantite_restante()) {
-                        throw new Exception("la matiere premiere "+ forFabric[i].getMp().getNom() + " est insuffisante -> qt actuelle : " +forFabric[i].getMp().getQuantite_restante() + " contre besoin : " + forFabric[i].getQt_mp() + "mp * "+this.qt_produit+"prod" );
+                    double qtRest = forFabric[i].getMp().getQuantiteRestante(con,date_);
+                    double besoin = forFabric[i].getQt_mp()*this.qt_produit;
+                    if (besoin > qtRest) {
+                        throw new Exception("la matiere premiere "+ forFabric[i].getMp().getNom() + " est insuffisante -> qt actuelle : " +qtRest + " contre besoin : " + forFabric[i].getQt_mp() + "mp * "+this.qt_produit+"prod" );
+                    }
+                    Achat_mp[] mesAchat_mps = forFabric[i].getMp().getMesAchat(date_);
+                    for (int j = 0; j < mesAchat_mps.length; j++) {
+                        if (mesAchat_mps[j].getReste_mp()== besoin) {
+                            cout_fabrication += mesAchat_mps[j].getReste_mp()*mesAchat_mps[j].getFournisseur_mp().getPrix();
+                            besoin = 0.0;
+                            mesAchat_mps[j].setReste_mp(0.0);
+                            mesAchat_mps[j].updateUncommitted(con);
+                            break;
+                        }else if (mesAchat_mps[j].getReste_mp()> besoin){
+                            cout_fabrication += (mesAchat_mps[j].getReste_mp()-besoin)*mesAchat_mps[j].getFournisseur_mp().getPrix();
+                            mesAchat_mps[j].setReste_mp(mesAchat_mps[j].getReste_mp()-besoin);
+                            besoin = 0.0;
+                            mesAchat_mps[j].updateUncommitted(con);
+                        }else{
+                            cout_fabrication += mesAchat_mps[j].getReste_mp()*mesAchat_mps[j].getFournisseur_mp().getPrix();
+                            besoin -= mesAchat_mps[j].getReste_mp();
+                            mesAchat_mps[j].setReste_mp(0.0);
+                            mesAchat_mps[j].updateUncommitted(con);
+                        }
+                    }
+                    if (besoin > 0) {
+                        System.out.println("reverif besoin ");
                     }
                 }
+                // execution de la requette 
+                st.setDouble(3, cout_fabrication);
+                rs = st.executeQuery();
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 

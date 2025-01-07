@@ -9,9 +9,9 @@ public class Formule {
     private Produit produit;
     private double qt_mp;
     public Formule(){}
-    public Formule(String mp,String produit,String qt_mp) throws Exception{
-        setMp(mp); 
-        setProduit(produit); 
+    public Formule(String mp,String produit,String qt_mp, Connection con) throws Exception{
+        setMp(mp, con); 
+        setProduit(produit,con); 
         setQt_mp(qt_mp); 
     }
     public int getId() {
@@ -37,10 +37,9 @@ public class Formule {
         this.mp = mp;
     }
 
-    public void setMp(String mp) throws Exception {
+    public void setMp(String mp, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Matiere_premiere
-       Connection con = MyConnect.getConnection();        Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
-         con.close();
+       Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
         setMp(toSet) ;
     }
 
@@ -52,10 +51,9 @@ public class Formule {
         this.produit = produit;
     }
 
-    public void setProduit(String produit) throws Exception {
+    public void setProduit(String produit,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
-         con.close();
+       Produit toSet = Produit.getById(Integer.parseInt(produit),con );
         setProduit(toSet) ;
     }
 

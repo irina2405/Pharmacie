@@ -11,9 +11,9 @@ public class Matiere_premiere {
     private double qt_total_mp_depense; // Quantité totale dépensée
     private double quantite_restante; // Quantité restante
     public Matiere_premiere(){}
-    public Matiere_premiere(String nom,String unite) throws Exception{
+    public Matiere_premiere(String nom,String unite, Connection con) throws Exception{
         setNom(nom); 
-        setUnite(unite); 
+        setUnite(unite, con); 
     }
     public int getId() {
         return id;
@@ -47,10 +47,9 @@ public class Matiere_premiere {
         this.unite = unite;
     }
 
-    public void setUnite(String unite) throws Exception {
+    public void setUnite(String unite,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Unite
-       Connection con = MyConnect.getConnection();        Unite toSet = Unite.getById(Integer.parseInt(unite),con );
-         con.close();
+       Unite toSet = Unite.getById(Integer.parseInt(unite),con );
         setUnite(toSet) ;
     }
 
@@ -78,7 +77,62 @@ public class Matiere_premiere {
         this.quantite_restante = quantite_restante;
     }
 
+    public double getQtTotalMpAchat(Connection connection, java.sql.Timestamp date) throws SQLException {
+        String query = date == null ?
+            "SELECT COALESCE(SUM(a.qt_mp), 0) AS total_achat FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ?" :
+            "SELECT COALESCE(SUM(a.qt_mp), 0) AS total_achat FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ? AND a.date_ <= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            if (date != null) {
+                stmt.setTimestamp(2, date); // Utilisation de setTimestamp
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    qt_total_mp_achat = rs.getDouble("total_achat");
+                }
+            }
+        }
+        return qt_total_mp_achat;
+    }
+    public double getQtTotalMpDepense(Connection connection, java.sql.Timestamp date) throws SQLException {
+        String query = date == null ?
+            "SELECT COALESCE(SUM(a.qt_mp - a.reste_mp), 0) AS total_depense FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ?" :
+            "SELECT COALESCE(SUM(a.qt_mp - a.reste_mp), 0) AS total_depense FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ? AND a.date_ <= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            if (date != null) {
+                stmt.setTimestamp(2, date);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    qt_total_mp_depense = rs.getDouble("total_depense");
+                }
+            }
+        }
+        return qt_total_mp_depense;
+    }
 
+    public double getQuantiteRestante(Connection connection, java.sql.Timestamp date) throws SQLException {
+        String query = date == null ?
+            "SELECT COALESCE(SUM(a.reste_mp), 0) AS quantite_restante FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ?" :
+            "SELECT COALESCE(SUM(a.reste_mp), 0) AS quantite_restante FROM achat_mp a INNER JOIN fournisseur_mp f ON a.id_fournisseur_mp = f.id WHERE f.id_mp = ? AND a.date_ <= ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            if (date != null) {
+                stmt.setTimestamp(2, date);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    quantite_restante = rs.getDouble("quantite_restante");
+                }
+            }
+        }
+        return quantite_restante;
+    }
+
+    public Achat_mp[] getMesAchat (Timestamp date_) throws Exception{
+        return Achat_mp.getFiltered(id , date_);
+    }
 
     public static Matiere_premiere getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;

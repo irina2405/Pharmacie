@@ -7,7 +7,7 @@ public class V_facture_impaye {
     private java.sql.Timestamp date_;
     private double total;
     private double total_paye;
-    private int id_client;
+    private Client client;
 
     public int getId() {
         return id;
@@ -25,11 +25,11 @@ public class V_facture_impaye {
         return total_paye;
     }
 
-    public int getId_client() {
-        return id_client;
+    public Client getClient() {
+        return client;
     }
 
-    public static List<V_facture_impaye> getAll(Connection connection) {
+    public static List<V_facture_impaye> getAll(Connection connection) throws Exception {
         List<V_facture_impaye> results = new ArrayList<>();
         String query = "SELECT * FROM v_facture_impaye";
         try (Statement stmt = connection.createStatement();
@@ -40,7 +40,7 @@ public class V_facture_impaye {
                 item.date_ = rs.getObject("date_", java.sql.Timestamp.class);
                 item.total = rs.getDouble("total");
                 item.total_paye = rs.getDouble("total_paye");
-                item.id_client = rs.getInt("id_client");
+                item.client = Client.getById(rs.getInt("id_client"),connection);
                 results.add(item);
             }
         } catch (SQLException e) {

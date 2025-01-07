@@ -63,8 +63,8 @@ CREATE TABLE fabrication(
 CREATE TABLE achat_mp(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
-   qt_mp NUMERIC(15,2)   NOT NULL,
-   reste_mp NUMERIC(15,2)  ,
+   qt_mp NUMERIC(15,2)   NOT NULL CHECK(qt_mp >= 0),
+   reste_mp NUMERIC(15,2) CHECK(reste_mp >= 0) ,
    id_fournisseur_mp INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_fournisseur_mp) REFERENCES Fournisseur_mp(id)
@@ -92,7 +92,7 @@ CREATE TABLE histo_prix_produit(
 CREATE TABLE achat_produit(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
-   qt_produit NUMERIC(15,2)   NOT NULL,
+   qt_produit NUMERIC(15,2)   NOT NULL CHECK (qt_produit >=0 ),
    id_produit_fournisseur INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_produit_fournisseur) REFERENCES produit_fournisseur(id)
@@ -103,8 +103,8 @@ CREATE TABLE fournisseur_mp(
    id SERIAL PRIMARY KEY,
    id_mp INTEGER NOT NULL ,
    id_fournisseur INTEGER NOT NULL ,
-   prix NUMERIC(15,2)   NOT NULL DEFAULT 0.00,
-   date_ DATE NOT NULL,
+   prix NUMERIC(15,2)  DEFAULT 0.00 CHECK (prix >= 0),
+   date_ DATE DEFAULT CURRENT_DATE,
    FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id),
    FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id)
 );
@@ -114,7 +114,7 @@ CREATE TABLE produit_fournisseur(
    id SERIAL PRIMARY KEY,
    id_fournisseur INTEGER NOT NULL ,
    id_produit INTEGER NOT NULL ,
-   date_ DATE NOT NULL,
+   date_ DATE CURRENT_DATE,
    prix NUMERIC(15,2)   NOT NULL DEFAULT 0.00,
    FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id),
    FOREIGN KEY(id_produit) REFERENCES produit(id)
@@ -124,7 +124,7 @@ CREATE TABLE Formule(
    id SERIAL PRIMARY KEY,
    id_mp INTEGER NOT NULL ,
    id_produit INTEGER NOT NULL ,
-   qt_mp NUMERIC(15,2)   NOT NULL  DEFAULT 0.00,
+   qt_mp NUMERIC(15,2)   NOT NULL  CHECK(qt_mp>=0),
    FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id),
    FOREIGN KEY(id_produit) REFERENCES produit(id)
 );
@@ -146,3 +146,4 @@ CREATE TABLE detail_facture(
    FOREIGN KEY(id_produit) REFERENCES produit(id),
    FOREIGN KEY(id_facture) REFERENCES facture(id)
 );
+

@@ -9,10 +9,10 @@ public class Achat_produit {
     private double qt_produit;
     private Produit_fournisseur produit_fournisseur;
     public Achat_produit(){}
-    public Achat_produit(String date_,String qt_produit,String produit_fournisseur) throws Exception{
+    public Achat_produit(String date_,String qt_produit,String produit_fournisseur, Connection con) throws Exception{
         setDate_(date_); 
         setQt_produit(qt_produit); 
-        setProduit_fournisseur(produit_fournisseur); 
+        setProduit_fournisseur(produit_fournisseur, con); 
     }
     public int getId() {
         return id;
@@ -67,11 +67,9 @@ public class Achat_produit {
         this.produit_fournisseur = produit_fournisseur;
     }
 
-    public void setProduit_fournisseur(String produit_fournisseur) throws Exception {
+    public void setProduit_fournisseur(String produit_fournisseur,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit_fournisseur
-        Connection con = MyConnect.getConnection();        
         Produit_fournisseur toSet = Produit_fournisseur.getById(Integer.parseInt(produit_fournisseur),con );
-        con.close();
         setProduit_fournisseur(toSet) ;
     }
 

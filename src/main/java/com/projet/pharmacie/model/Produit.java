@@ -17,10 +17,10 @@ public class Produit {
     private double qtPanier;
 
     public Produit(){}
-    public Produit(String nom,String denorm_prix_vente,String unite) throws Exception{
+    public Produit(String nom,String denorm_prix_vente,String unite,Connection con) throws Exception{
         setNom(nom); 
         setDenorm_prix_vente(denorm_prix_vente); 
-        setUnite(unite); 
+        setUnite(unite,con); 
     }
     public int getId() {
         return id;
@@ -69,10 +69,9 @@ public class Produit {
         this.unite = unite;
     }
 
-    public void setUnite(String unite) throws Exception {
+    public void setUnite(String unite, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Unite
-       Connection con = MyConnect.getConnection();        Unite toSet = Unite.getById(Integer.parseInt(unite),con );
-         con.close();
+       Unite toSet = Unite.getById(Integer.parseInt(unite),con );
         setUnite(toSet) ;
     }
 

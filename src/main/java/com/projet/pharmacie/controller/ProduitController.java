@@ -43,7 +43,7 @@ public class ProduitController {
             Produit instance = new Produit();
             instance.setNom(nom) ; 
             instance.setDenorm_prix_vente(denorm_prix_vente) ; 
-            instance.setUnite(unite) ;
+            instance.setUnite(unite,con) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);

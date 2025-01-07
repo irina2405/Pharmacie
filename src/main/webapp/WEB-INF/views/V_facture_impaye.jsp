@@ -22,7 +22,7 @@
                 <td><%= item.getDate_() %></td>
                 <td><%= item.getTotal() %></td>
                 <td><%= item.getTotal_paye() %></td>
-                <td><%= Client.getById(item.getId_client()).getNom() %></td>
+                <td><%= item.getClient().getNom() %></td>
                 <td><a href="/payer_en_totalite/<%= item.getId() %>">payer en totalite</a></td>
             </tr>
             <% } %>

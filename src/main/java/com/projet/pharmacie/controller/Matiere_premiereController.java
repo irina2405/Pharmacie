@@ -42,7 +42,7 @@ public class Matiere_premiereController {
             con = MyConnect.getConnection();
             Matiere_premiere instance = new Matiere_premiere();
             instance.setNom(nom) ; 
-            instance.setUnite(unite) ;
+            instance.setUnite(unite,con) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);

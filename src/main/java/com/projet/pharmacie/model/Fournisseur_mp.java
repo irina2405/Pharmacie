@@ -10,9 +10,9 @@ public class Fournisseur_mp {
     private double prix;
     private java.sql.Date date_;
     public Fournisseur_mp(){}
-    public Fournisseur_mp(String mp,String fournisseur,String prix,String date_) throws Exception{
-        setMp(mp); 
-        setFournisseur(fournisseur); 
+    public Fournisseur_mp(String mp,String fournisseur,String prix,String date_, Connection con) throws Exception{
+        setMp(mp,con); 
+        setFournisseur(fournisseur, con); 
         setPrix(prix); 
         setDate_(date_); 
     }
@@ -39,11 +39,9 @@ public class Fournisseur_mp {
         this.mp = mp;
     }
 
-    public void setMp(String mp) throws Exception {
+    public void setMp(String mp,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Matiere_premiere
-        Connection con = MyConnect.getConnection();        
         Matiere_premiere toSet = Matiere_premiere.getById(Integer.parseInt(mp),con );
-        con.close();
         setMp(toSet) ;
     }
 
@@ -55,10 +53,9 @@ public class Fournisseur_mp {
         this.fournisseur = fournisseur;
     }
 
-    public void setFournisseur(String fournisseur) throws Exception {
+    public void setFournisseur(String fournisseur, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Fournisseur
-       Connection con = MyConnect.getConnection();        Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
-         con.close();
+       Fournisseur toSet = Fournisseur.getById(Integer.parseInt(fournisseur),con );
         setFournisseur(toSet) ;
     }
 

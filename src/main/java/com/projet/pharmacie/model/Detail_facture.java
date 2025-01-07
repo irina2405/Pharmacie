@@ -10,9 +10,9 @@ public class Detail_facture {
     private double denorm_prix_vente;
     private double qt_produit;
     public Detail_facture(){}
-    public Detail_facture(String produit,String facture,String denorm_prix_vente,String qt_produit) throws Exception{
-        setProduit(produit); 
-        setFacture(facture); 
+    public Detail_facture(String produit,String facture,String denorm_prix_vente,String qt_produit, Connection con) throws Exception{
+        setProduit(produit,con); 
+        setFacture(facture,con); 
         setDenorm_prix_vente(denorm_prix_vente); 
         setQt_produit(qt_produit); 
     }
@@ -39,10 +39,9 @@ public class Detail_facture {
         this.produit = produit;
     }
 
-    public void setProduit(String produit) throws Exception {
+    public void setProduit(String produit,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Produit
-       Connection con = MyConnect.getConnection();        Produit toSet = Produit.getById(Integer.parseInt(produit),con );
-         con.close();
+       Produit toSet = Produit.getById(Integer.parseInt(produit),con );
         setProduit(toSet) ;
     }
 
@@ -54,10 +53,9 @@ public class Detail_facture {
         this.facture = facture;
     }
 
-    public void setFacture(String facture) throws Exception {
+    public void setFacture(String facture, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Facture
-       Connection con = MyConnect.getConnection();        Facture toSet = Facture.getById(Integer.parseInt(facture),con );
-         con.close();
+       Facture toSet = Facture.getById(Integer.parseInt(facture),con );
         setFacture(toSet) ;
     }
 

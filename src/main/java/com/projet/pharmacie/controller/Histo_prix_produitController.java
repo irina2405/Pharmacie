@@ -43,7 +43,7 @@ public class Histo_prix_produitController {
             Histo_prix_produit instance = new Histo_prix_produit();
             instance.setDate_(date_) ; 
             instance.setPrix_vente_produit(prix_vente_produit) ; 
-            instance.setProduit(produit) ;
+            instance.setProduit(produit,con) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);

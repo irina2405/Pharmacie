@@ -43,8 +43,8 @@ public class Detail_factureController {
         try {
             con = MyConnect.getConnection();
             Detail_facture instance = new Detail_facture();
-            instance.setProduit(produit) ;
-            instance.setFacture(facture) ;
+            instance.setProduit(produit,con) ;
+            instance.setFacture(facture,con) ;
             instance.setDenorm_prix_vente(denorm_prix_vente) ; 
             instance.setQt_produit(qt_produit) ; 
             if (mode != null && "u".equals(mode)) {

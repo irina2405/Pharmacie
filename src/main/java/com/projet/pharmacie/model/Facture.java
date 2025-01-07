@@ -15,11 +15,11 @@ public class Facture {
     private double total_paye;
     private Client client;
     public Facture(){}
-    public Facture(String date_,String total,String total_paye,String client) throws Exception{
+    public Facture(String date_,String total,String total_paye,String client,Connection con) throws Exception{
         setDate_(date_); 
         setTotal(total); 
         setTotal_paye(total_paye); 
-        setClient(client); 
+        setClient(client, con); 
     }
     public int getId() {
         return id;
@@ -92,12 +92,10 @@ public class Facture {
         this.client = client;
     }
 
-    public void setClient(String client) throws Exception {
+    public void setClient(String client, Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Client
          if (client!=null && !client.isEmpty()) {
-             Connection con = MyConnect.getConnection();       
               Client toSet = Client.getById(Integer.parseInt(client),con );
-              con.close();
               setClient(toSet) ;
          }
     }

@@ -48,7 +48,7 @@ public class FabricationController {
             Fabrication instance = new Fabrication();
             instance.setDate_(date_) ; 
             instance.setQt_produit(qt_produit) ; 
-            instance.setProduit(produit) ;
+            instance.setProduit(produit,con) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);

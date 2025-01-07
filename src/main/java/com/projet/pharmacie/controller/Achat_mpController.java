@@ -48,7 +48,8 @@ public class Achat_mpController {
             instance.setFournisseur_mp(correspondant) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
-                instance.update(con);
+                System.out.println("no update previous here !");
+                // instance.update(con);
             } else {
                 instance.insertUncommitted(con);
                 Double retrait = correspondant.getPrix()*Double.parseDouble(qt_mp);
