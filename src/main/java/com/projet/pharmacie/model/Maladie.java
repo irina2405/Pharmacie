@@ -168,6 +168,8 @@ public class Maladie {
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
                 item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setMin_age(rs.getInt("min_age"));
+                item.setMax_age(rs.getInt("max_age"));
                 item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
                 items.add(item);
             }

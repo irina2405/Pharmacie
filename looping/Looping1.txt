@@ -43,6 +43,8 @@ CREATE TABLE produit(
    id SERIAL,
    nom VARCHAR(50)  NOT NULL,
    denorm_prix_vente NUMERIC(15,2)   NOT NULL,
+   min_age INTEGER,
+   max_age INTEGER,
    id_1 INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_1) REFERENCES unite(id)

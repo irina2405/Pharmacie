@@ -1,6 +1,5 @@
 package com.projet.pharmacie.model;
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 import com.projet.pharmacie.db.MyConnect;
 import com.projet.pharmacie.util.*;
@@ -8,7 +7,10 @@ public class Produit {
     private int id;
     private String nom;
     private double denorm_prix_vente;
+    private int min_age;
+    private int max_age;
     private Unite unite;
+
     private double qt_total_du_produit; // Quantité totale achetée
     private double qt_total_produite_produit; // Quantité totale produite
     private double qt_total_vendu; // Quantité totale vendue
@@ -17,9 +19,11 @@ public class Produit {
     private double qtPanier;
 
     public Produit(){}
-    public Produit(String nom,String denorm_prix_vente,String unite,Connection con) throws Exception{
+    public Produit(String nom,String denorm_prix_vente,String min_age,String max_age,String unite,Connection con) throws Exception{
         setNom(nom); 
         setDenorm_prix_vente(denorm_prix_vente); 
+        setMin_age(min_age); 
+        setMax_age(max_age); 
         setUnite(unite,con); 
     }
     public int getId() {
@@ -61,6 +65,36 @@ public class Produit {
         setDenorm_prix_vente(toSet) ;
     }
 
+    public int getMin_age() {
+        return min_age;
+    }
+
+    public void setMin_age(int min_age) throws Exception {
+        Util.verifyNumericPostive(min_age, "min_age");
+        this.min_age = min_age;
+    }
+
+    public void setMin_age(String min_age) throws Exception {
+        int toSet =  Util.convertIntFromHtmlInput(min_age);
+
+        setMin_age(toSet) ;
+    }
+
+    public int getMax_age() {
+        return max_age;
+    }
+
+    public void setMax_age(int max_age) throws Exception {
+        Util.verifyNumericPostive(max_age, "max_age");
+        this.max_age = max_age;
+    }
+
+    public void setMax_age(String max_age) throws Exception {
+        int toSet =  Util.convertIntFromHtmlInput(max_age);
+
+        setMax_age(toSet) ;
+    }
+
     public Unite getUnite() {
         return unite;
     }
@@ -69,12 +103,14 @@ public class Produit {
         this.unite = unite;
     }
 
-    public void setUnite(String unite, Connection con) throws Exception {
+    public void setUnite(String unite,Connection con) throws Exception {
          //define how this type should be conterted from String ... type : Unite
-       Unite toSet = Unite.getById(Integer.parseInt(unite),con );
+        Unite toSet = Unite.getById(Integer.parseInt(unite),con );
+
         setUnite(toSet) ;
     }
 
+    
     public double getQt_total_du_produit() {
         return qt_total_du_produit;
     }
@@ -137,6 +173,8 @@ public class Produit {
                 instance.setId(rs.getInt("id"));
                 instance.setNom(rs.getString("nom"));
                 instance.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                instance.setMin_age(rs.getInt("min_age"));
+                instance.setMax_age(rs.getInt("max_age"));
                 instance.setUnite(Unite.getById(rs.getInt("id_unite") ,con ));
             }
         } catch (Exception e) {
@@ -169,6 +207,7 @@ public class Produit {
                 instance.setDate_(rs.getDate("date_"));
                 instance.setPrix_vente_produit(rs.getDouble("prix_vente_produit"));
                 instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
+            //new
             }
         } catch (Exception e) {
             throw e ;
@@ -187,7 +226,7 @@ public class Produit {
         List<Produit> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM Produit_with_qt order by id asc ";
+            String query = "SELECT * FROM produit order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -196,13 +235,65 @@ public class Produit {
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
                 item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
-                item.setUnite(Unite.getById(rs.getInt("id_unite"), con));
-                item.setQt_total_du_produit(rs.getDouble("qt_total_du_produit"));
-                item.setQt_total_produite_produit(rs.getDouble("qt_total_produite_produit"));
-                item.setQt_total_vendu(rs.getDouble("qt_total_vendu"));
-                item.setQt_actuelle(
-                    item.getQt_total_produite_produit() + item.getQt_total_du_produit() - item.getQt_total_vendu()
-                );
+                item.setMin_age(rs.getInt("min_age"));
+                item.setMax_age(rs.getInt("max_age"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Produit[0]);
+    }
+    public static Produit[] search(String min, String max, String id) throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Produit> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT produit.* FROM produit join maladie_produit on produit.id = maladie_produit.id_produit   WHERE 1 = 1 ";
+            if (min!=null && !min.isEmpty()) {
+                query+=" and (min_age >= ? or max_age >= ? )";
+            }
+            if (max!=null && !max.isEmpty()) {
+                query+=" and (max_age <= ? or min_age <= ?)";
+            }
+            if (id!=null && !id.isEmpty()) {
+                query+= " and id_maladie = ? ";
+            }
+            st = con.prepareStatement(query);
+            int param = 1;
+            if (min!=null && !min.isEmpty()) {
+                st.setInt(param, Integer.parseInt(min));
+                param ++;
+                st.setInt(param, Integer.parseInt(min));
+                param ++;
+            }
+            if (max!=null && !max.isEmpty()) {
+                st.setInt(param, Integer.parseInt(max));
+                param ++;
+                st.setInt(param, Integer.parseInt(max));
+                param ++;
+            }
+            if (id!=null && !id.isEmpty()) {
+                st.setInt(param, Integer.parseInt(id));
+            }
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Produit item = new Produit();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+                item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setMin_age(rs.getInt("min_age"));
+                item.setMax_age(rs.getInt("max_age"));
+                item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -232,6 +323,8 @@ public class Produit {
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
                 item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setMin_age(rs.getInt("min_age"));
+                item.setMax_age(rs.getInt("max_age"));
                 item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
                 items.add(item);
             }
@@ -242,28 +335,25 @@ public class Produit {
             if (st != null) st.close();
             if (con != null && !false) con.close();
         }
-
+        // new
         return items.toArray(new Produit[0]);
     }
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO produit (nom, denorm_prix_vente, id_unite) VALUES (?, ?, ?) RETURNING id";
+            String query = "INSERT INTO produit (nom, denorm_prix_vente, min_age, max_age, id_unite) VALUES (?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setDouble(2, this.denorm_prix_vente);
-            st.setInt(3, this.unite.getId());
+            st.setInt(3, this.min_age);
+            st.setInt(4, this.max_age);
+            st.setInt(5, this.unite.getId());
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
                     this.setId(generatedId); 
-                    Histo_prix_produit histo_prix_produit = new Histo_prix_produit();
-                    histo_prix_produit.setDate_(new Date(System.currentTimeMillis()));
-                    histo_prix_produit.setPrix_vente_produit(this.denorm_prix_vente);
-                    histo_prix_produit.setProduit(this);
-                    histo_prix_produit.insertUncommited(con);
                     con.commit();
                     return generatedId;
                 } else {
@@ -282,19 +372,16 @@ public class Produit {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE produit SET nom = ?, denorm_prix_vente = ?, id_unite = ? WHERE id = ?";
+            String query = "UPDATE produit SET nom = ?, denorm_prix_vente = ?, min_age = ?, max_age = ?, id_unite = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setDouble(2, this.denorm_prix_vente);
-            st.setInt (3, this.unite.getId());
-            st.setInt(4, this.getId());
+            st.setInt(3, this.min_age);
+            st.setInt(4, this.max_age);
+            st.setInt (5, this.unite.getId());
+            st.setInt(6, this.getId());
             try {
                 st.executeUpdate();
-                Histo_prix_produit histo_prix_produit = new Histo_prix_produit();
-                histo_prix_produit.setDate_(new Date(System.currentTimeMillis()));
-                histo_prix_produit.setPrix_vente_produit(this.denorm_prix_vente);
-                histo_prix_produit.setProduit(this);
-                histo_prix_produit.insertUncommited(con);
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
@@ -323,7 +410,6 @@ public class Produit {
            if (con != null) con.close(); 
         }
     }
-
     public Matiere_premiere[] getMatiere_premieresConcernes () throws Exception{
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
