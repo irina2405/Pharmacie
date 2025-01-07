@@ -48,11 +48,12 @@ public class Achat_mpController {
             instance.setFournisseur_mp(correspondant) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
-                instance.update(con);
+                System.out.println("no update previous here !");
+                // instance.update(con);
             } else {
-                instance.insert(con);
+                instance.insertUncommitted(con);
                 Double retrait = correspondant.getPrix()*Double.parseDouble(qt_mp);
-                Tresorerie tresorerie = new Tresorerie(date_, "0", retrait.toString());
+                Tresorerie tresorerie = new Tresorerie("achat mp",date_, "0", retrait.toString());
                 tresorerie.retirer(con);
             }
             con.commit();

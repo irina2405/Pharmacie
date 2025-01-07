@@ -43,8 +43,8 @@ public class Fournisseur_mpController {
         try {
             con = MyConnect.getConnection();
             Fournisseur_mp instance = new Fournisseur_mp();
-            instance.setMp(mp) ;
-            instance.setFournisseur(fournisseur) ;
+            instance.setMp(mp,con) ;
+            instance.setFournisseur(fournisseur,con) ;
             instance.setPrix(prix) ; 
             instance.setDate_(date_) ; 
             if (mode != null && "u".equals(mode)) {

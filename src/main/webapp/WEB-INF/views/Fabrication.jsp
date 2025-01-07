@@ -14,6 +14,7 @@
                     <th>Id</th>
                     <th>Date </th>
                     <th>Qt produit</th>
+                    <th>Cout</th>
                     <th>Produit</th>
                     <th>Actions</th>
                     <th> </th>
@@ -23,6 +24,7 @@
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getDate_() %></td>
                     <td><%= all[i].getQt_produit() %></td>
+                    <td><%= all[i].getCout() %></td>
                     <td><%= all[i].getProduit() != null ? all[i].getProduit().getNom() : "" %> </td>
                     <td>
                         <a href="/TraitFabrication/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>

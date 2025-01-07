@@ -51,8 +51,8 @@
                     <input type="number" name="qt_produit" id="qt_produit" class="form-control" value="<%= currentAchat_produit != null ? currentAchat_produit.getQt_produit() : "" %>">
                 </div>
                 <div class="form-group">
-                    <label for="Produit_fournisseur">Fournisseur produit</label>
-                    <select name="Produit_fournisseur" id="Produit_fournisseur" class="form-control">
+                    <label for="produit_fournisseur">Fournisseur produit</label>
+                    <select name="produit_fournisseur" id="produit_fournisseur" class="form-control">
                         <option value="">-- choose --</option>
                         <% for (int j = 0; j < allProduit_fournisseur.length; j++) { %>
                         <option value="<%= allProduit_fournisseur[j].getId() %>" <%= currentAchat_produit != null && currentAchat_produit.getProduit_fournisseur() != null && currentAchat_produit.getProduit_fournisseur().getId() == allProduit_fournisseur[j].getId() ? "selected" : "" %>><%= allProduit_fournisseur[j].getId() + " -- " + allProduit_fournisseur[j].getFournisseur().getNom() + " -- " + allProduit_fournisseur[j].getProduit().getNom() + " - " + " -- " + allProduit_fournisseur[j].getPrix()  %>

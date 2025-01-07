@@ -27,7 +27,7 @@
                     <td><%= all[i].getTotal_paye() %></td>
                     <td><%= all[i].getClient() != null ? all[i].getClient().getNom() : "" %> </td>
                     <td>
-                        <a href="/TraitFacture/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                        <%-- <a href="/TraitFacture/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a> --%>
                         <a href="/InitFacture/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                     </td>
                 </tr>

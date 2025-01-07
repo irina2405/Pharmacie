@@ -52,7 +52,7 @@ public class Achat_produitController {
             } else {
                 instance.insert(con);
                 Double retrait = correspondant.getPrix()*Double.parseDouble(qt_produit);
-                Tresorerie tresorerie = new Tresorerie(date_, "0", retrait.toString());
+                Tresorerie tresorerie = new Tresorerie("achat produit",date_, "0", retrait.toString());
                 tresorerie.retirer(con);
             }
             con.commit();

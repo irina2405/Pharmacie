@@ -43,8 +43,8 @@ public class Maladie_produitController {
         try {
             con = MyConnect.getConnection();
             Maladie_produit instance = new Maladie_produit();
-            instance.setProduit(produit) ;
-            instance.setMaladie(maladie) ;
+            instance.setProduit(produit,con) ;
+            instance.setMaladie(maladie,con) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);
