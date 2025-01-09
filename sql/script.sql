@@ -62,6 +62,18 @@ CREATE TABLE fabrication(
    FOREIGN KEY(id_produit) REFERENCES produit(id)
 );
 
+
+CREATE TABLE fournisseur_mp(
+   id SERIAL PRIMARY KEY,
+   id_mp INTEGER NOT NULL ,
+   id_fournisseur INTEGER NOT NULL ,
+   prix NUMERIC(15,2)  DEFAULT 0.00 CHECK (prix >= 0),
+   date_ DATE DEFAULT CURRENT_DATE,
+   FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id),
+   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id)
+);
+
+
 CREATE TABLE achat_mp(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
@@ -91,6 +103,16 @@ CREATE TABLE histo_prix_produit(
    FOREIGN KEY(id_produit) REFERENCES produit(id)
 );
 
+CREATE TABLE produit_fournisseur(
+   id SERIAL PRIMARY KEY,
+   id_fournisseur INTEGER NOT NULL ,
+   id_produit INTEGER NOT NULL ,
+   date_ DATE DEFAULT CURRENT_DATE,
+   prix NUMERIC(15,2)   NOT NULL DEFAULT 0.00,
+   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id),
+   FOREIGN KEY(id_produit) REFERENCES produit(id)
+);
+
 CREATE TABLE achat_produit(
    id SERIAL,
    date_ TIMESTAMP NOT NULL,
@@ -98,28 +120,6 @@ CREATE TABLE achat_produit(
    id_produit_fournisseur INTEGER NOT NULL,
    PRIMARY KEY(id),
    FOREIGN KEY(id_produit_fournisseur) REFERENCES produit_fournisseur(id)
-);
-
-
-CREATE TABLE fournisseur_mp(
-   id SERIAL PRIMARY KEY,
-   id_mp INTEGER NOT NULL ,
-   id_fournisseur INTEGER NOT NULL ,
-   prix NUMERIC(15,2)  DEFAULT 0.00 CHECK (prix >= 0),
-   date_ DATE DEFAULT CURRENT_DATE,
-   FOREIGN KEY(id_mp) REFERENCES matiere_premiere(id),
-   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id)
-);
-
-
-CREATE TABLE produit_fournisseur(
-   id SERIAL PRIMARY KEY,
-   id_fournisseur INTEGER NOT NULL ,
-   id_produit INTEGER NOT NULL ,
-   date_ DATE CURRENT_DATE,
-   prix NUMERIC(15,2)   NOT NULL DEFAULT 0.00,
-   FOREIGN KEY(id_fournisseur) REFERENCES Fournisseur(id),
-   FOREIGN KEY(id_produit) REFERENCES produit(id)
 );
 
 CREATE TABLE Formule(
@@ -142,7 +142,7 @@ CREATE TABLE maladie_produit(
 CREATE TABLE detail_facture(
    id SERIAL PRIMARY KEY,
    id_produit INTEGER NOT NULL ,
-   id_facture INTEGER NOT NULL on DELETE CASCADE ,
+   id_facture INTEGER NOT NULL ,
    denorm_prix_vente NUMERIC(15,2)   NOT NULL CHECK (denorm_prix_vente >=0),
    qt_produit NUMERIC(15,2)   NOT NULL CHECK (qt_produit >= 0),
    FOREIGN KEY(id_produit) REFERENCES produit(id),
