@@ -12,27 +12,15 @@ import com.projet.pharmacie.db.MyConnect;
 import com.projet.pharmacie.model.*;
 
 @Controller
-public class Detail_factureController {
+public class CategorieController {
 
-    @GetMapping("/InitDetail_facture")
-    public String showAll(@RequestParam(required = false)String id_categorie ,@RequestParam(required = false)String id_indice ,Model model) {
+    @GetMapping("/InitCategorie")
+    public String showAll(Model model) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
-            if (id_categorie!=null && id_indice!=null) {
-                model.addAttribute("all", Detail_facture.search(id_categorie, id_indice));
-            } else {
-                model.addAttribute("all", Detail_facture.getAll());
-            }
-
-            Produit[] allProduit = Produit.getAll();
-            model.addAttribute("allProduit", allProduit);
-            Facture[] allFacture = Facture.getAll();
-            
-            Categorie[] allCategories = Categorie.getAll();
-            model.addAttribute("allCategorie", allCategories);
-            model.addAttribute("allFacture", allFacture);
-            return "Detail_facture";
+            model.addAttribute("all", Categorie.getAll());
+            return "Categorie";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
@@ -45,23 +33,20 @@ public class Detail_factureController {
 
     }
 
-    @PostMapping("/InitDetail_facture")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String produit, @RequestParam String facture, @RequestParam String denorm_prix_vente, @RequestParam String qt_produit, @RequestParam(required = false) String mode) {
+    @PostMapping("/InitCategorie")
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String nom, @RequestParam(required = false) String mode) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
-            Detail_facture instance = new Detail_facture();
-            instance.setProduit(produit,con) ;
-            instance.setFacture(facture,con) ;
-            instance.setDenorm_prix_vente(denorm_prix_vente) ; 
-            instance.setQt_produit(qt_produit) ; 
+            Categorie instance = new Categorie();
+            instance.setNom(nom) ; 
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);
             } else {
                 instance.insert(con);
             }
-            return "redirect:/InitDetail_facture";
+            return "redirect:/InitCategorie";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
@@ -73,12 +58,12 @@ public class Detail_factureController {
         }
     }
 
-    @GetMapping("/InitDetail_facture/delete/{id}")
+    @GetMapping("/InitCategorie/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
         Connection con = null;
         try {
-            Detail_facture.deleteById(id);
-            return "redirect:/InitDetail_facture";
+            Categorie.deleteById(id);
+            return "redirect:/InitCategorie";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 
@@ -90,19 +75,15 @@ public class Detail_factureController {
         }
     }
 
-    @GetMapping("/TraitDetail_facture/{id}")
+    @GetMapping("/TraitCategorie/{id}")
     public String editForm(Model model, @PathVariable int id) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
-            Detail_facture currentDetail_facture = Detail_facture.getById(id ,con);
-            model.addAttribute("currentDetail_facture", currentDetail_facture);
-            model.addAttribute("all", Detail_facture.getAll());
-            Produit[] allProduit = Produit.getAll();
-            model.addAttribute("allProduit", allProduit);
-            Facture[] allFacture = Facture.getAll();
-            model.addAttribute("allFacture", allFacture);
-            return "Detail_facture";
+            Categorie currentCategorie = Categorie.getById(id ,con);
+            model.addAttribute("currentCategorie", currentCategorie);
+            model.addAttribute("all", Categorie.getAll());
+            return "Categorie";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("eMessage", e.getMessage() + (e.getCause() != null ? "<br> <hr>" + e.getCause().getMessage() : "") ); 

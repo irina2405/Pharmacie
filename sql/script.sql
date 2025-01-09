@@ -41,6 +41,12 @@ CREATE TABLE matiere_premiere(
    FOREIGN KEY(id_unite) REFERENCES unite(id)
 );
 
+CREATE TABLE categorie(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id)
+);
+
 CREATE TABLE produit(
    id SERIAL,
    nom VARCHAR(50)  NOT NULL,
@@ -48,6 +54,8 @@ CREATE TABLE produit(
    min_age INTEGER,
    max_age INTEGER,
    id_unite INTEGER NOT NULL,
+   id_categorie INTEGER NOT NULL,
+   FOREIGN KEY(id_categorie) REFERENCES categorie(id),
    PRIMARY KEY(id),
    FOREIGN KEY(id_unite) REFERENCES unite(id)
 );

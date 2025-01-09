@@ -117,6 +117,62 @@ public class Detail_facture {
 
         return instance;
     }
+
+    public static Detail_facture[] search(String id_categorie, String id_indice) throws Exception {
+        Connection con = MyConnect.getConnection();
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Detail_facture> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT detail_facture.* FROM detail_facture JOIN produit ON detail_facture.id_produit = produit.id WHERE 1=1 ";
+            
+            if (id_categorie!=null && !id_categorie.isEmpty()) {
+                query+= " and id_categorie = ?";
+            }
+            if (id_indice != null && !id_indice.isEmpty()) {
+                if (id_indice.equals("1")) {
+                    // Bébé : chevauchement avec [0, 1]
+                    query += " AND min_age <= 1 AND max_age >= 0 ";
+                } else if (id_indice.equals("2")) {
+                    // Enfant : chevauchement avec [1, 6]
+                    query += " AND min_age <= 6 AND max_age >= 1 ";
+                } else if (id_indice.equals("3")) {
+                    // Ado : chevauchement avec [6, 18]
+                    query += " AND min_age <= 18 AND max_age >= 6 ";
+                } else if (id_indice.equals("4")) {
+                    // Adulte : au-delà de 18
+                    query += " AND min_age > 18 ";
+                }
+            }
+            
+            st = con.prepareStatement(query);
+            
+            if (id_categorie!=null && !id_categorie.isEmpty()) {
+                st.setInt(1, Integer.parseInt(id_categorie));
+            }
+            
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Detail_facture item = new Detail_facture();
+                item.setId(rs.getInt("id"));
+                item.setProduit(Produit.getById(rs.getInt("id_produit")  ,con ));
+                item.setFacture(Facture.getById(rs.getInt("id_facture")  ,con ));
+                item.setDenorm_prix_vente(rs.getDouble("denorm_prix_vente"));
+                item.setQt_produit(rs.getDouble("qt_produit"));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e ;
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (con != null && !false) con.close();
+        }
+
+        return items.toArray(new Detail_facture[0]);
+    }
     public static Detail_facture[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;

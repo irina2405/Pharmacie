@@ -10,7 +10,9 @@ public class Produit {
     private int min_age;
     private int max_age;
     private Unite unite;
+    private Categorie categorie;
 
+    
     private double qt_total_du_produit; // Quantité totale achetée
     private double qt_total_produite_produit; // Quantité totale produite
     private double qt_total_vendu; // Quantité totale vendue
@@ -19,12 +21,13 @@ public class Produit {
     private double qtPanier;
 
     public Produit(){}
-    public Produit(String nom,String denorm_prix_vente,String min_age,String max_age,String unite,Connection con) throws Exception{
+    public Produit(String nom,String denorm_prix_vente,String min_age,String max_age,String unite,String categorie,Connection con) throws Exception{
         setNom(nom); 
         setDenorm_prix_vente(denorm_prix_vente); 
         setMin_age(min_age); 
         setMax_age(max_age); 
         setUnite(unite,con); 
+        setCategorie(categorie,con); 
     }
     public int getId() {
         return id;
@@ -110,7 +113,21 @@ public class Produit {
         setUnite(toSet) ;
     }
 
-    
+    public Categorie getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(Categorie categorie) throws Exception {
+        this.categorie = categorie;
+    }
+
+    public void setCategorie(String categorie,Connection con) throws Exception {
+         //define how this type should be conterted from String ... type : Categorie
+        Categorie toSet = Categorie.getById(Integer.parseInt(categorie),con );
+
+        setCategorie(toSet) ;
+    }
+
     public double getQt_total_du_produit() {
         return qt_total_du_produit;
     }
@@ -176,38 +193,7 @@ public class Produit {
                 instance.setMin_age(rs.getInt("min_age"));
                 instance.setMax_age(rs.getInt("max_age"));
                 instance.setUnite(Unite.getById(rs.getInt("id_unite") ,con ));
-            }
-        } catch (Exception e) {
-            throw e ;
-        } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !true) con.close();
-        }
-
-        return instance;
-    }
-    public Histo_prix_produit getLast () throws Exception{
-        //;
-        Connection con = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        Histo_prix_produit instance = null;
-
-        try {
-            con = MyConnect.getConnection();
-            String query = "select distinct on (id_produit) histo_prix_produit.* from histo_prix_produit  WHERE id = ? order by id_produit , date_ desc";
-            st = con.prepareStatement(query);
-            st.setInt(1, id);
-            rs = st.executeQuery();
-
-            if (rs.next()) {
-                instance = new Histo_prix_produit();
-                instance.setId(rs.getInt("id"));
-                instance.setDate_(rs.getDate("date_"));
-                instance.setPrix_vente_produit(rs.getDouble("prix_vente_produit"));
-                instance.setProduit(Produit.getById(rs.getInt("id_produit") ,con ));
-            //new
+                instance.setCategorie(Categorie.getById(rs.getInt("id_categorie") ,con ));
             }
         } catch (Exception e) {
             throw e ;
@@ -238,6 +224,7 @@ public class Produit {
                 item.setMin_age(rs.getInt("min_age"));
                 item.setMax_age(rs.getInt("max_age"));
                 item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                item.setCategorie(Categorie.getById(rs.getInt("id_categorie")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -250,6 +237,7 @@ public class Produit {
 
         return items.toArray(new Produit[0]);
     }
+
     public static Produit[] search(String min, String max, String id) throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
@@ -294,6 +282,7 @@ public class Produit {
                 item.setMin_age(rs.getInt("min_age"));
                 item.setMax_age(rs.getInt("max_age"));
                 item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
+                item.setCategorie(Categorie.getById(rs.getInt("id_categorie")  ,con ));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -338,17 +327,19 @@ public class Produit {
         // new
         return items.toArray(new Produit[0]);
     }
+
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO produit (nom, denorm_prix_vente, min_age, max_age, id_unite) VALUES (?, ?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO produit (nom, denorm_prix_vente, min_age, max_age, id_unite, id_categorie) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setDouble(2, this.denorm_prix_vente);
             st.setInt(3, this.min_age);
             st.setInt(4, this.max_age);
             st.setInt(5, this.unite.getId());
+            st.setInt(6, this.categorie.getId());
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
@@ -372,14 +363,15 @@ public class Produit {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE produit SET nom = ?, denorm_prix_vente = ?, min_age = ?, max_age = ?, id_unite = ? WHERE id = ?";
+            String query = "UPDATE produit SET nom = ?, denorm_prix_vente = ?, min_age = ?, max_age = ?, id_unite = ?, id_categorie = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setDouble(2, this.denorm_prix_vente);
             st.setInt(3, this.min_age);
             st.setInt(4, this.max_age);
             st.setInt (5, this.unite.getId());
-            st.setInt(6, this.getId());
+            st.setInt (6, this.categorie.getId());
+            st.setInt(7, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
@@ -410,6 +402,7 @@ public class Produit {
            if (con != null) con.close(); 
         }
     }
+
     public Matiere_premiere[] getMatiere_premieresConcernes () throws Exception{
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;

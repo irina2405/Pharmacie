@@ -19,6 +19,7 @@ public class ProduitController {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
+            model.addAttribute("all", Produit.getAll());
             if (min_age!=null || max_age!=null) {
                 model.addAttribute("all", Produit.search(min_age,max_age, id));
             }else{
@@ -26,6 +27,8 @@ public class ProduitController {
             }
             Unite[] allUnite = Unite.getAll();
             model.addAttribute("allUnite", allUnite);
+            Categorie[] allCategorie = Categorie.getAll();
+            model.addAttribute("allCategorie", allCategorie);
             return "Produit";
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,7 +41,6 @@ public class ProduitController {
         }
 
     }
-
 
     @GetMapping("/maladies_concernes_par_produit/{id_produit}")
     public String maladies_concernes_par_produit(Model model , @PathVariable("id_produit") int id_produit) {
@@ -82,8 +84,9 @@ public class ProduitController {
 
     }
 
+
     @PostMapping("/InitProduit")
-    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String nom, @RequestParam String denorm_prix_vente, @RequestParam String min_age, @RequestParam String max_age, @RequestParam String unite, @RequestParam(required = false) String mode) {
+    public String saveOrUpdate(Model model, @RequestParam(required = false) String id,  @RequestParam String nom, @RequestParam String denorm_prix_vente, @RequestParam String min_age, @RequestParam String max_age, @RequestParam String unite, @RequestParam String categorie, @RequestParam(required = false) String mode) {
         Connection con = null;
         try {
             con = MyConnect.getConnection();
@@ -93,6 +96,7 @@ public class ProduitController {
             instance.setMin_age(min_age) ; 
             instance.setMax_age(max_age) ; 
             instance.setUnite(unite,con ) ;
+            instance.setCategorie(categorie,con ) ;
             if (mode != null && "u".equals(mode)) {
                 instance.setId(id);
                 instance.update(con);
@@ -138,6 +142,8 @@ public class ProduitController {
             model.addAttribute("all", Produit.getAll());
             Unite[] allUnite = Unite.getAll();
             model.addAttribute("allUnite", allUnite);
+            Categorie[] allCategorie = Categorie.getAll();
+            model.addAttribute("allCategorie", allCategorie);
             return "Produit";
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,6 +155,5 @@ public class ProduitController {
             }
         }
     }
-
 
 }

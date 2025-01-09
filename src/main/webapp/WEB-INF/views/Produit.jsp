@@ -6,6 +6,7 @@
         Produit[] all = (Produit[]) request.getAttribute("all");
         Produit currentProduit = (Produit) request.getAttribute("currentProduit");
         Unite[] allUnite = (Unite[]) request.getAttribute("allUnite");
+        Categorie[] allCategorie = (Categorie[]) request.getAttribute("allCategorie");
     %>
     <div class="row">
         <div class="col-md-7 tableContainer ">
@@ -14,9 +15,11 @@
                     <th>Id</th>
                     <th>Nom</th>
                     <th>Denorm prix vente</th>
+                    <th>Qt actuelle</th>
                     <th>Min age</th>
                     <th>Max age</th>
                     <th>Unite</th>
+                    <th>Categorie</th>
                     <th>Actions</th>
                     <th>voir les mp concernes</th>
                     <th>voir les maladies concernes</th>
@@ -26,9 +29,11 @@
                     <td><%= all[i].getId() %></td>
                     <td><%= all[i].getNom() %></td>
                     <td><%= all[i].getDenorm_prix_vente() %></td>
+                    <td><%= all[i].getQt_actuelle() %></td>
                     <td><%= all[i].getMin_age() %></td>
                     <td><%= all[i].getMax_age() %></td>
                     <td><%= all[i].getUnite() != null ? all[i].getUnite().getNom() : "" %> </td>
+                    <td><%= all[i].getCategorie() != null ? all[i].getCategorie().getNom() : "" %> </td>
                     <td>
                         <a href="/TraitProduit/<%= all[i].getId() %>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
                         <a href="/InitProduit/delete/<%= all[i].getId() %>" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
@@ -71,6 +76,15 @@
                         <option value="">-- choose --</option>
                         <% for (int j = 0; j < allUnite.length; j++) { %>
                         <option value="<%= allUnite[j].getId() %>" <%= currentProduit != null && currentProduit.getUnite() != null && currentProduit.getUnite().getId() == allUnite[j].getId() ? "selected" : "" %>><%= allUnite[j].getNom() %>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="categorie">Categorie</label>
+                    <select name="categorie" id="categorie" class="form-control">
+                        <option value="">-- choose --</option>
+                        <% for (int j = 0; j < allCategorie.length; j++) { %>
+                        <option value="<%= allCategorie[j].getId() %>" <%= currentProduit != null && currentProduit.getCategorie() != null && currentProduit.getCategorie().getId() == allCategorie[j].getId() ? "selected" : "" %>><%= allCategorie[j].getNom() %>
                         <% } %>
                     </select>
                 </div>

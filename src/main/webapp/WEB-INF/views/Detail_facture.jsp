@@ -7,9 +7,33 @@
         Detail_facture currentDetail_facture = (Detail_facture) request.getAttribute("currentDetail_facture");
         Produit[] allProduit = (Produit[]) request.getAttribute("allProduit");
         Facture[] allFacture = (Facture[]) request.getAttribute("allFacture");
+        Categorie[] allCategorie = (Categorie[]) request.getAttribute("allCategorie");
+        
     %>
     <div class="row">
         <div class="col-md-7 tableContainer ">
+        <form action="/InitDetail_facture" method="get">
+            <div class="form-group">
+                <label for="categorie">Categorie</label>
+                <select name="id_categorie" id="categorie" class="form-control">
+                    <option value="">-- choose --</option>
+                    <% for (int j = 0; j < allCategorie.length; j++) { %>
+                    <option value="<%= allCategorie[j].getId() %>" ><%= allCategorie[j].getNom() %>
+                    <% } %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="indice">Indice d'age</label>
+                <select name="id_indice" id="indice" class="form-control">
+                    <option value="1">Bebe - 0 a 1</option>
+                    <option value="2">Enfant - 1 a 6</option>
+                    <option value="3">Ado - 6 a 18</option>
+                    <option value="4">Adulte - 18 +</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Rechercher</button>
+
+        </form>
             <table class="table table-striped" id="table">
                 <tr>
                     <th>Id</th>

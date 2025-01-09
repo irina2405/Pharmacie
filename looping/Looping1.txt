@@ -31,6 +31,12 @@ CREATE TABLE client(
    PRIMARY KEY(id)
 );
 
+CREATE TABLE categorie(
+   id SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id)
+);
+
 CREATE TABLE matiere_premiere(
    id SERIAL,
    nom VARCHAR(50)  NOT NULL,
@@ -46,8 +52,10 @@ CREATE TABLE produit(
    min_age INTEGER,
    max_age INTEGER,
    id_1 INTEGER NOT NULL,
+   id_2 INTEGER NOT NULL,
    PRIMARY KEY(id),
-   FOREIGN KEY(id_1) REFERENCES unite(id)
+   FOREIGN KEY(id_1) REFERENCES categorie(id),
+   FOREIGN KEY(id_2) REFERENCES unite(id)
 );
 
 CREATE TABLE fabrication(
