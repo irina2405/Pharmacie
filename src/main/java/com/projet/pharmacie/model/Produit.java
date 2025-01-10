@@ -212,7 +212,7 @@ public class Produit {
         List<Produit> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM produit order by id asc ";
+            String query = "SELECT * FROM Produit_with_qt order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -225,6 +225,12 @@ public class Produit {
                 item.setMax_age(rs.getInt("max_age"));
                 item.setUnite(Unite.getById(rs.getInt("id_unite")  ,con ));
                 item.setCategorie(Categorie.getById(rs.getInt("id_categorie")  ,con ));
+                item.setQt_total_du_produit(rs.getDouble("qt_total_du_produit"));
+                item.setQt_total_produite_produit(rs.getDouble("qt_total_produite_produit"));
+                item.setQt_total_vendu(rs.getDouble("qt_total_vendu"));
+                item.setQt_actuelle(
+                    item.getQt_total_produite_produit() + item.getQt_total_du_produit() - item.getQt_total_vendu()
+                );
                 items.add(item);
             }
         } catch (Exception e) {
